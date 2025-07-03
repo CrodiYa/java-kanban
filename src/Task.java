@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Task {
     private int task_id;
     private final String task;
@@ -21,10 +23,6 @@ public class Task {
 
     public String getTask() {
         return task;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public Status getStatus() {
@@ -53,4 +51,16 @@ public class Task {
 
         return result + "}";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        Task copy = (Task) obj;
+        return Objects.equals(this.task, copy.task) &&
+                Objects.equals(this.description, copy.description) &&
+                this.status == copy.status &&
+                this.task_id == copy.task_id;
+    }
+
 }
