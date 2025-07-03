@@ -25,6 +25,10 @@ public class Task {
         return task;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public Status getStatus() {
         return status;
     }
