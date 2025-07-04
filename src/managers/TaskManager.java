@@ -74,12 +74,11 @@ public class TaskManager {
     }
 
 
-    public Task updateTask(Task task) {
+    public void updateTask(Task task) {
         tasks.put(task.getTaskID(), task);
-        return task;
     }
 
-    public Epic updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) {
         int id = epic.getTaskID();
         Epic oldEpic = epics.get(id);
 
@@ -91,11 +90,10 @@ public class TaskManager {
          oldEpic ссылается на тот же объект,
          поэтому добавлять его обратно необязательно,
          */
-        return oldEpic;
     }
 
 
-    public SubTask updateSubTask(SubTask subTask) {
+    public void updateSubTask(SubTask subTask) {
         int id = subTask.getTaskID();
         SubTask oldSubTask = subtasks.get(id);
 
@@ -106,7 +104,6 @@ public class TaskManager {
          поэтому добавлять его обратно необязательно,
          */
 
-        return oldSubTask;
     }
 
     public void updateEpicStatus(Epic epic) {
