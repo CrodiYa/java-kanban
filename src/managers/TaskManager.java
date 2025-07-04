@@ -85,7 +85,6 @@ public class TaskManager {
         oldEpic.setTitle(epic.getTitle());
         oldEpic.setDescription(epic.getDescription());
 
-        updateEpicStatus(oldEpic);
         /*
          oldEpic ссылается на тот же объект,
          поэтому добавлять его обратно необязательно,
@@ -100,6 +99,9 @@ public class TaskManager {
         oldSubTask.setTitle(subTask.getTitle());
         oldSubTask.setDescription(subTask.getDescription());
         oldSubTask.setStatus(subTask.getStatus());
+
+        updateEpicStatus(epics.get(oldSubTask.getEpicID())); //обновляем статус эпика
+
         /*
          oldSubTask ссылается на тот же объект,
          поэтому добавлять его обратно необязательно,
