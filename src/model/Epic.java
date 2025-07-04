@@ -1,66 +1,32 @@
 package model;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    private final HashMap<Integer, SubTask> subTasks;
+    private final ArrayList<Integer> subtasksIDs;
 
     public Epic(String title, String description, Status status) {
         super(title, description, status);
-        subTasks = new HashMap<>();
-        updateStatus(); // пересчитываем статус вне зависимости от указаний конструктора
+        subtasksIDs = new ArrayList<>();
     }
-
-
+    
     public void addSubTask(SubTask subTask) {
-        subTasks.put(subTask.getTaskID(), subTask);
-        updateStatus();
+        subtasksIDs.add(subTask.getTaskID());
     }
 
-    public void updateStatus() {
-        if (subTasks.isEmpty()) {
-            this.setStatus(Status.NEW);
-            return;
-        }
-
-        int subTasksDone = 0;
-        int subTasksNotNew = 0;
-
-        for (SubTask subTask : subTasks.values()) {
-            Status status = subTask.getStatus();
-
-            if (status != Status.NEW) subTasksNotNew++;
-            if (status == Status.DONE) subTasksDone++;
-        }
-
-        if (subTasksNotNew != 0) {
-            this.setStatus(Status.IN_PROGRESS);
-        } else {
-            this.setStatus(Status.NEW);
-            return;
-        }
-
-        if (subTasksDone != 0 && subTasksDone == subTasks.size()) this.setStatus(Status.DONE);
-    }
 
     public void deleteSubTask(int id) {
-        subTasks.remove(id);
-        updateStatus();
+        subtasksIDs.remove(id);
     }
 
     public void clearSubtasks() {
-        subTasks.clear();
-        updateStatus();
+        subtasksIDs.clear();
+        this.setStatus(Status.NEW);
     }
 
-    public Set<Integer> getSubTasksKeys() { // для удаления каждой подзадачи в таблице подзадач taskManager`а
-        return subTasks.keySet();
-    }
-
-    public String getSubtasksString() { //возвращает таблицу в виде строки для подробного изучения
-        return subTasks.toString();
+    public ArrayList<Integer> getSubtasksIDs(){
+        return subtasksIDs;
     }
 
     @Override
@@ -71,7 +37,7 @@ public class Epic extends Task {
                 this.getTitle(),
                 this.getDescription(),
                 this.getStatus(),
-                this.getSubtasksString()
+                this.getSubtasksIDs()
         );
     }
 
