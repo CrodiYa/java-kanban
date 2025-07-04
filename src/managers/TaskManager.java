@@ -99,6 +99,7 @@ public class TaskManager {
 
         oldSubTask.setTitle(subTask.getTitle());
         oldSubTask.setDescription(subTask.getDescription());
+        oldSubTask.setStatus(subTask.getStatus());
         /*
          oldSubTask ссылается на тот же объект,
          поэтому добавлять его обратно необязательно,
