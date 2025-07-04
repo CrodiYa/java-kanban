@@ -20,9 +20,6 @@ public class TaskManager {
 
     public void addEpic(Epic epic) {
         epic.setTaskID(++idCount);
-
-        updateEpicStatus(epic); // проверяем статус на случай невалидного статуса
-
         epics.put(epic.getTaskID(), epic);
     }
 
@@ -66,7 +63,7 @@ public class TaskManager {
         }
         ArrayList<SubTask> subTasksList= new ArrayList<>();
 
-        for (Integer subtaskID : epic.getSubtasksIDs()){
+        for (Integer subtaskID : epic.getSubtaskIds()){
             subTasksList.add(subtasks.get(subtaskID));
         }
 
@@ -109,8 +106,8 @@ public class TaskManager {
 
     }
 
-    public void updateEpicStatus(Epic epic) {
-        ArrayList<Integer> epicChildren = epic.getSubtasksIDs();
+    private void updateEpicStatus(Epic epic) {
+        ArrayList<Integer> epicChildren = epic.getSubtaskIds();
         if (epicChildren.isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
@@ -159,7 +156,7 @@ public class TaskManager {
 
         Epic epic = epics.get(id);
 
-        for (Integer subtaskID : epic.getSubtasksIDs()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
+        for (Integer subtaskID : epic.getSubtaskIds()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
             subtasks.remove(subtaskID);
         }
         epics.remove(id);
