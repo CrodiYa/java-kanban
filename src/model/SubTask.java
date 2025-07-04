@@ -1,3 +1,5 @@
+package model;
+
 public class SubTask extends Task {
     private final int epic_parent_id;
 
