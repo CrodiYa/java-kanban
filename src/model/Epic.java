@@ -5,53 +5,18 @@ import java.util.Set;
 
 public class Epic extends Task {
 
-    private HashMap<Integer, SubTask> subTasks;
+    private final HashMap<Integer, SubTask> subTasks;
 
-    public Epic(String epic, String description, Status status) {
-        super(epic, description, status);
+    public Epic(String title, String description, Status status) {
+        super(title, description, status);
         subTasks = new HashMap<>();
         updateStatus(); // пересчитываем статус вне зависимости от указаний конструктора
     }
 
 
     public void addSubTask(SubTask subTask) {
-        subTasks.put(subTask.get_task_id(), subTask);
+        subTasks.put(subTask.getTaskID(), subTask);
         updateStatus();
-    }
-
-    public void printSubTasks(Status status) {
-        // Метод печатает подзадачи для каждого статуса + название эпика
-        if (subTasks.isEmpty()) {
-            if (status == Status.NEW) System.out.println(this.getTask());
-            return;
-        }
-        boolean flag = true;
-
-        for (SubTask subTask : subTasks.values()) {
-            if (status.equals(subTask.getStatus())) {
-                if (flag) {
-                    System.out.println(this.getTask());
-                    flag = false;
-                }
-                System.out.println(" -" + subTask.getTask());
-            }
-        }
-    }
-
-    public void printSubTasks() {
-        // метод печатает каждую подзадачу метода
-        System.out.printf("Эпик: %s\n", this.getTask());
-        if (subTasks.isEmpty()) {
-            System.out.println("Подзадач нет");
-            return;
-        }
-
-        for (SubTask subTask : subTasks.values()) {
-            System.out.printf("Подзадача: %s Статус: %s\n",
-                    subTask.getTask(),
-                    subTask.getStatus()
-            );
-        }
     }
 
     public void updateStatus() {
@@ -80,8 +45,8 @@ public class Epic extends Task {
         if (subTasksDone != 0 && subTasksDone == subTasks.size()) this.setStatus(Status.DONE);
     }
 
-    public void deleteSubTask(int task_id) {
-        subTasks.remove(task_id);
+    public void deleteSubTask(int id) {
+        subTasks.remove(id);
         updateStatus();
     }
 
@@ -96,6 +61,18 @@ public class Epic extends Task {
 
     public String getSubtasksString() { //возвращает таблицу в виде строки для подробного изучения
         return subTasks.toString();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s{id=%d, title=%s, description=%s, status=%s, subtasks=%s}",
+                this.getClass(),
+                this.getTaskID(),
+                this.getTitle(),
+                this.getDescription(),
+                this.getStatus(),
+                this.getSubtasksString()
+        );
     }
 
 }
