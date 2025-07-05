@@ -63,8 +63,8 @@ public class TaskManager {
         }
         ArrayList<SubTask> subTasksList= new ArrayList<>();
 
-        for (Integer subtaskID : epic.getSubtaskIds()){
-            subTasksList.add(subtasks.get(subtaskID));
+        for (Integer subtaskId : epic.getSubtaskIds()){
+            subTasksList.add(subtasks.get(subtaskId));
         }
 
         return subTasksList;
@@ -156,8 +156,8 @@ public class TaskManager {
 
         Epic epic = epics.get(id);
 
-        for (Integer subtaskID : epic.getSubtaskIds()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
-            subtasks.remove(subtaskID);
+        for (Integer subtaskId : epic.getSubtaskIds()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
+            subtasks.remove(subtaskId);
         }
         epics.remove(id);
     }
@@ -172,9 +172,9 @@ public class TaskManager {
             return;
         }
 
-        int epicParentID = subtasks.get(id).getEpicId();
+        int epicParentId = subtasks.get(id).getEpicId();
         // удаляем подзадачу из листа эпика, пересчитываем статус
-        Epic epic = epics.get(epicParentID);
+        Epic epic = epics.get(epicParentId);
         epic.deleteSubTask(id);
         updateEpicStatus(epic);
 
