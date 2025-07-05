@@ -16,11 +16,11 @@ public class SubTask extends Task {
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s, epicID=%d}",
                 this.getClass(),
-                this.getTaskID(),
-                this.getTitle(),
-                this.getDescription(),
-                this.getStatus(),
-                this.getEpicID()
+                this.taskID,
+                this.title,
+                this.description,
+                this.status,
+                this.epicID
         );
     }
 }

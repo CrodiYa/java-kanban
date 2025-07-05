@@ -33,11 +33,11 @@ public class Epic extends Task {
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s, subtasks=%s}",
                 this.getClass(),
-                this.getTaskID(),
-                this.getTitle(),
-                this.getDescription(),
-                this.getStatus(),
-                this.getSubtaskIds()
+                this.taskID,
+                this.title,
+                this.description,
+                this.status,
+                this.subtaskIds
         );
     }
 
