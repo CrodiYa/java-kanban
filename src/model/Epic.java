@@ -12,7 +12,7 @@ public class Epic extends Task {
     }
 
     public void addSubTask(SubTask subTask) {
-        subtaskIds.add(subTask.getTaskID());
+        subtaskIds.add(subTask.getTaskId());
     }
 
 
@@ -33,7 +33,7 @@ public class Epic extends Task {
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s, subtasks=%s}",
                 this.getClass(),
-                this.taskID,
+                this.taskId,
                 this.title,
                 this.description,
                 this.status,

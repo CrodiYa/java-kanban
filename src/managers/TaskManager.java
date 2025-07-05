@@ -14,20 +14,20 @@ public class TaskManager {
 
 
     public void addTask(Task task) {
-        task.setTaskID(++idCount);
-        tasks.put(task.getTaskID(), task);
+        task.setTaskId(++idCount);
+        tasks.put(task.getTaskId(), task);
     }
 
     public void addEpic(Epic epic) {
-        epic.setTaskID(++idCount);
-        epics.put(epic.getTaskID(), epic);
+        epic.setTaskId(++idCount);
+        epics.put(epic.getTaskId(), epic);
     }
 
     public void addSubTask(SubTask subTask) {
-        subTask.setTaskID(++idCount);
-        subtasks.put(subTask.getTaskID(), subTask);
+        subTask.setTaskId(++idCount);
+        subtasks.put(subTask.getTaskId(), subTask);
 
-        Epic epic = epics.get(subTask.getEpicID());
+        Epic epic = epics.get(subTask.getEpicId());
         epic.addSubTask(subTask);
         updateEpicStatus(epic);
     }
@@ -72,11 +72,11 @@ public class TaskManager {
 
 
     public void updateTask(Task task) {
-        tasks.put(task.getTaskID(), task);
+        tasks.put(task.getTaskId(), task);
     }
 
     public void updateEpic(Epic epic) {
-        int id = epic.getTaskID();
+        int id = epic.getTaskId();
         Epic oldEpic = epics.get(id);
 
         oldEpic.setTitle(epic.getTitle());
@@ -90,14 +90,14 @@ public class TaskManager {
 
 
     public void updateSubTask(SubTask subTask) {
-        int id = subTask.getTaskID();
+        int id = subTask.getTaskId();
         SubTask oldSubTask = subtasks.get(id);
 
         oldSubTask.setTitle(subTask.getTitle());
         oldSubTask.setDescription(subTask.getDescription());
         oldSubTask.setStatus(subTask.getStatus());
 
-        updateEpicStatus(epics.get(oldSubTask.getEpicID())); //обновляем статус эпика
+        updateEpicStatus(epics.get(oldSubTask.getEpicId())); //обновляем статус эпика
 
         /*
          oldSubTask ссылается на тот же объект,
@@ -172,7 +172,7 @@ public class TaskManager {
             return;
         }
 
-        int epicParentID = subtasks.get(id).getEpicID();
+        int epicParentID = subtasks.get(id).getEpicId();
         // удаляем подзадачу из листа эпика, пересчитываем статус
         Epic epic = epics.get(epicParentID);
         epic.deleteSubTask(id);

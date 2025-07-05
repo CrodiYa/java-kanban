@@ -3,7 +3,7 @@ package model;
 import java.util.Objects;
 
 public class Task {
-    protected int taskID;
+    protected int taskId;
     protected String title;
     protected String description;
     protected Status status;
@@ -15,12 +15,12 @@ public class Task {
         this.status = status;
     }
 
-    public int getTaskID() {
-        return taskID;
+    public int getTaskId() {
+        return taskId;
     }
 
-    public void setTaskID(int taskID) {
-        this.taskID = taskID;
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 
     public String getTitle() {
@@ -51,7 +51,7 @@ public class Task {
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s}",
                 this.getClass(),
-                taskID,
+                taskId,
                 title,
                 description,
                 status
@@ -66,7 +66,7 @@ public class Task {
         return Objects.equals(this.title, copy.title) &&
                 Objects.equals(this.description, copy.description) &&
                 this.status == copy.status &&
-                this.taskID == copy.taskID;
+                this.taskId == copy.taskId;
     }
 
 }
