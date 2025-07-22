@@ -1,22 +1,21 @@
 package managers;
 
-import model.*;
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCount;
-
-    private final int MAX_HISTORY_CAPACITY = 10;
-
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, SubTask> subtasks = new HashMap<>();
 
-    private final LinkedList<Task> history = new LinkedList<>();
+    HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public void addTask(Task task) {
@@ -42,19 +41,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        updateHistory(tasks.get(id));
+        historyManager.addTask(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
     public Epic getEpic(int id) {
-        updateHistory(epics.get(id));
+        historyManager.addTask(epics.get(id));
         return epics.get(id);
     }
 
     @Override
     public SubTask getSubTask(int id) {
-        updateHistory(subtasks.get(id));
+        historyManager.addTask(subtasks.get(id));
         return subtasks.get(id);
     }
 
@@ -202,16 +201,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void updateHistory(Task task) {
-        if (history.size() == MAX_HISTORY_CAPACITY) {
-            history.removeFirst();
-        }
-        history.add(task);
-    }
-
     @Override
     public List<Task> getHistory() {
-        return history;
+        return historyManager.getHistory();
     }
 
 }
