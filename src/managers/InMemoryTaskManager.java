@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager{
+public class InMemoryTaskManager implements TaskManager {
     private int idCount;
 
     private final int MAX_HISTORY_CAPACITY = 10;
@@ -17,6 +17,7 @@ public class InMemoryTaskManager implements TaskManager{
     private final HashMap<Integer, SubTask> subtasks = new HashMap<>();
 
     private final LinkedList<Task> history = new LinkedList<>();
+
     @Override
     public void addTask(Task task) {
         task.setTaskId(++idCount);
@@ -75,12 +76,12 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public ArrayList<SubTask> getSubTasksFromEpic(int id) {
         Epic epic = epics.get(id);
-        if(epic == null){
+        if (epic == null) {
             return new ArrayList<>();
         }
-        ArrayList<SubTask> subTasksList= new ArrayList<>();
+        ArrayList<SubTask> subTasksList = new ArrayList<>();
 
-        for (Integer subtaskId : epic.getSubtaskIds()){
+        for (Integer subtaskId : epic.getSubtaskIds()) {
             subTasksList.add(subtasks.get(subtaskId));
         }
 
@@ -201,17 +202,15 @@ public class InMemoryTaskManager implements TaskManager{
         }
     }
 
-    @Override
-    public void updateHistory(Task task){
-        if(history.size() <= MAX_HISTORY_CAPACITY) {
-            history.add(task);
-        } else {
+    public void updateHistory(Task task) {
+        if (history.size() == MAX_HISTORY_CAPACITY) {
             history.removeFirst();
         }
+        history.add(task);
     }
 
     @Override
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return history;
     }
 
