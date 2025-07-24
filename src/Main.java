@@ -1,5 +1,3 @@
-import managers.*;
-import model.*;
 
 public class Main {
 
