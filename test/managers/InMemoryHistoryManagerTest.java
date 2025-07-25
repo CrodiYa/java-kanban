@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class InMemoryHistoryManagerTest {
 
-    HistoryManager manager = Managers.getDefaultHistory();
+    private final HistoryManager manager = Managers.getDefaultHistory();
 
     @Test
     public void shouldAddAnyTask() {

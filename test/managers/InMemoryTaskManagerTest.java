@@ -8,17 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    TaskManager manager = Managers.getDefault();
-    Task task;
-    Epic epic;
-    SubTask subtask1;
-    SubTask subtask2;
+    private final TaskManager manager = Managers.getDefault();
+    private Task task;
+    private Epic epic;
+    private SubTask subtask1;
+    private SubTask subtask2;
 
-    final int invalidId = 42;
-    final int taskId = 1;
-    final int epicId = 2;
-    final int subTaskId1 = 3;
-    final int subTaskId2 = 4;
+    private final int invalidId = 42;
+    private final int taskId = 1;
+    private final int epicId = 2;
+    private final int subTaskId1 = 3;
+    private final int subTaskId2 = 4;
 
     @BeforeEach
     public void BeforeEach() {
