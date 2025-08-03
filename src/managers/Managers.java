@@ -1,5 +1,8 @@
 package managers;
 
+import managers.history.HistoryManager;
+import managers.history.InMemoryHistoryManager;
+
 public class Managers {
 
     public static TaskManager getDefault() {

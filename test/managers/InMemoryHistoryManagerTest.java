@@ -1,5 +1,6 @@
 package managers;
 
+import managers.history.HistoryManager;
 import model.Epic;
 import model.Status;
 import model.SubTask;
