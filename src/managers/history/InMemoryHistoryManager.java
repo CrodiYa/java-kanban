@@ -73,7 +73,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        Node current = head; // копия головы, чтобы избежать потери головы
+        Node current = head; // копия головы, чтобы избежать потери
 
         // проходим через всю последовательность и добавляем задачу в список
         while (current != null) {
