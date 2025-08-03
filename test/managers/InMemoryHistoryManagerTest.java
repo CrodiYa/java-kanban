@@ -7,12 +7,11 @@ import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
-    private final HistoryManager manager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Test
     public void shouldAddAnyTask() {
@@ -24,28 +23,116 @@ class InMemoryHistoryManagerTest {
         SubTask subtask = new SubTask("subtask", "test", Status.NEW, 2);
         subtask.setTaskId(3);
 
-        manager.addTask(task);
-        manager.addTask(epic);
-        manager.addTask(subtask);
+        historyManager.addTask(task);
+        historyManager.addTask(epic);
+        historyManager.addTask(subtask);
 
-        assertTrue(manager.getHistory().contains(task));
-        assertTrue(manager.getHistory().contains(epic));
-        assertTrue(manager.getHistory().contains(subtask));
+        assertTrue(historyManager.getHistory().contains(task));
+        assertTrue(historyManager.getHistory().contains(epic));
+        assertTrue(historyManager.getHistory().contains(subtask));
     }
 
     @Test
-    public void shouldDeleteFirstAndAddLastWhenMaxLimit() {
-        for (int i = 0; i < 10; i++) {
-            manager.addTask(new Task(i+"", i+"", Status.NEW));
+    public void shouldBeUniqueInHistoryWhenWasAddedAgain() {
+        for (int i = 1; i <= 3; i++) {
+            Task task = new Task(i + "", "test", Status.NEW);
+            task.setTaskId(i);
+            historyManager.addTask(task);
         }
 
-        Task first = manager.getHistory().getFirst();
+        int id = 2;
+        Task task = new Task(id + "", "again", Status.NEW);
+        task.setTaskId(id);
+        historyManager.addTask(task);
 
-        Task last = new Task(11+"", 11+"", Status.NEW);
-        manager.addTask(last);
+        int expected = 1;
+        int actual = 0;
+        for (Task t : historyManager.getHistory()) {
+            if (t.getTaskId() == id) {
+                actual++;
+            }
+        }
+        assertEquals(expected, actual);
+    }
 
-        assertFalse(manager.getHistory().contains(first));
-        assertTrue(manager.getHistory().contains(last));
+    @Test
+    public void shouldBeLastInHistoryWhenWasAddedAgain() {
+        for (int i = 1; i <= 3; i++) {
+            Task task = new Task(i + "", "test", Status.NEW);
+            task.setTaskId(i);
+            historyManager.addTask(task);
+        }
+
+        Task task = new Task(1 + "", "again", Status.NEW);
+        task.setTaskId(1);
+        historyManager.addTask(task);
+
+        assertEquals(historyManager.getHistory().getLast(), task);
+    }
+
+    @Test
+    public void shouldNotContainWhenDeletedFromTaskManager() {
+        TaskManager taskManager = Managers.getDefault();
+        Task task = new Task("title", "demo", Status.NEW);
+        taskManager.addTask(task);
+        taskManager.getTask(1);
+
+        taskManager.deleteTask(1);
+
+        assertFalse(taskManager.getHistory().contains(task));
 
     }
+
+    @Test
+    public void shouldBeEmptyWhenTasksClearedFromTaskManager() {
+        TaskManager taskManager = Managers.getDefault();
+        for (int i = 1; i <= 10; i++) {
+            taskManager.addTask(new Task("title", "demo", Status.NEW));
+            taskManager.getTask(i);
+        }
+        taskManager.clearTasks();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    public void shouldBeEmptyWhenEpicsClearedFromTaskManager() {
+        TaskManager taskManager = Managers.getDefault();
+        for (int i = 1; i <= 10; i++) {
+            taskManager.addEpic(new Epic("title", "demo", Status.NEW));
+            taskManager.getEpic(i);
+        }
+        taskManager.clearEpics();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    public void shouldBeEmptyWhenSubtasksClearedFromTaskManager() {
+        TaskManager taskManager = Managers.getDefault();
+        taskManager.addEpic(new Epic("epic", "demo", Status.NEW));
+
+        for (int i = 2; i <= 10; i++) {
+            taskManager.addSubTask(new SubTask("title", "demo", Status.NEW, 1));
+            taskManager.getSubTask(i);
+        }
+
+        taskManager.clearSubTasks();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    public void shouldBeEmptyWhenEpicsClearedFromTaskManagerAndHistoryContainsSubtasks() {
+        TaskManager taskManager = Managers.getDefault();
+        for (int i = 1; i <= 10; i++) {
+            taskManager.addEpic(new Epic("title", "demo", Status.NEW));
+        }
+        for (int i = 11; i <= 20; i++) {
+            taskManager.addSubTask(new SubTask("title", "demo", Status.NEW, i - 10));
+            taskManager.getSubTask(i);
+        }
+
+        taskManager.clearEpics();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+
 }
