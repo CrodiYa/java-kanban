@@ -122,7 +122,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void subTasksSizeInEpicShouldBeEqualWithSize() {
-        // проверяем, что количетсво сабтасков в эпике равно добавленным сабтаскам
+        // проверяем, что количество сабтасков в эпике равно добавленным сабтаскам
         assertEquals(2, manager.getSubTasksFromEpic(epicId).size());
         assertEquals(2, manager.getEpic(epicId).getSubtaskIds().size());
     }
