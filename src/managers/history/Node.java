@@ -4,7 +4,7 @@ import model.Task;
 
 class Node {
     /* так как весь класс объявлен package-private,
-    *  то нет нужды указывать модификаторы доступа для полей*/
+     *  то нет нужды указывать модификаторы доступа для полей*/
     final Task task;
     Node prev;
     Node next;
