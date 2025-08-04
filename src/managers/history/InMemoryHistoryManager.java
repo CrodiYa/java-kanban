@@ -45,7 +45,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             head = newNode;
         } else {
             // добавляем новый узел к текущему хвосту
-            tail.next = newNode;
+            tail.setNext(newNode);
         }
         tail = newNode; // переопределяем хвост
 
@@ -53,15 +53,15 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(Node node) {
-        Node next = node.next;
-        Node prev = node.prev;
+        Node next = node.getNext();
+        Node prev = node.getPrev();
 
         if (prev == null) {
             // переопределяем голову на второй элемент последовательности
             head = next;
         } else {
             // привязываем предыдущий узел к последующему (минуя текущий)
-            prev.next = next;
+            prev.setNext(next);
         }
 
         if (next == null) {
@@ -69,7 +69,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = prev;
         } else {
             // привязываем к последующему узлу предыдущий (минуя текущий)
-            next.prev = prev;
+            next.setPrev(prev);
         }
 
     }
@@ -80,8 +80,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         // проходим через всю последовательность и добавляем задачу в список
         while (current != null) {
-            tasks.add(current.task);
-            current = current.next;
+            tasks.add(current.getTask());
+            current = current.getNext();
         }
         return tasks;
     }
