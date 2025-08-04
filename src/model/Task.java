@@ -27,7 +27,7 @@ public class Task {
         return title;
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -35,9 +35,10 @@ public class Task {
         return description;
     }
 
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
     }
+
     public Status getStatus() {
         return status;
     }

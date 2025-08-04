@@ -4,15 +4,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ManagersTest {
+public class ManagersTest {
 
     @Test
-    public void shouldBeNotNullWhenDefault(){
+    public void shouldBeNotNullWhenDefault() {
         assertNotNull(Managers.getDefault());
     }
 
     @Test
-    public void shouldBeNotNullWhenHistoryDefault(){
+    public void shouldBeNotNullWhenHistoryDefault() {
         assertNotNull(Managers.getDefaultHistory());
     }
 }

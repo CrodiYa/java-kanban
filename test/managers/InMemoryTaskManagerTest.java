@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
+public class InMemoryTaskManagerTest {
 
     private final TaskManager manager = Managers.getDefault();
     private Task task;
@@ -122,7 +122,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void subTasksSizeInEpicShouldBeEqualWithSize() {
-        // проверяем, что количетсво сабтасков в эпике равно добавленным сабтаскам
+        // проверяем, что количество сабтасков в эпике равно добавленным сабтаскам
         assertEquals(2, manager.getSubTasksFromEpic(epicId).size());
         assertEquals(2, manager.getEpic(epicId).getSubtaskIds().size());
     }

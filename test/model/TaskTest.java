@@ -3,10 +3,10 @@ package model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class TaskTest {
+public class TaskTest {
 
     @Test
-    void shouldBeEqualWhenIdEqual() {
+    public void shouldBeEqualWhenIdEqual() {
         Task task1 = new Task("test1", "test1", Status.NEW);
         Task task2 = new Task("test2", "test2", Status.NEW);
 

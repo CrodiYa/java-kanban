@@ -1,5 +1,6 @@
 package managers;
 
+import managers.history.HistoryManager;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -150,11 +151,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(id)) {
             return;
         }
+        historyManager.remove(id); // удаляем из истории
         tasks.remove(id);
     }
 
     @Override
     public void clearTasks() {
+        clearHistoryTasks();
         tasks.clear();
     }
 
@@ -163,18 +166,24 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epics.containsKey(id)) {
             return;
         }
-
         Epic epic = epics.get(id);
 
         for (Integer subtaskId : epic.getSubtaskIds()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
             subtasks.remove(subtaskId);
+            historyManager.remove(subtaskId); // удаляем из истории
         }
+
+        historyManager.remove(id); // удаляем из истории
         epics.remove(id);
+
     }
 
     @Override
     public void clearEpics() {
+        clearHistoryEpics();
         epics.clear();
+
+        clearHistorySubTasks();
         subtasks.clear();
     }
 
@@ -190,14 +199,34 @@ public class InMemoryTaskManager implements TaskManager {
         epic.deleteSubTask(id);
         updateEpicStatus(epic);
 
+        historyManager.remove(id); // удаляем из истории
         subtasks.remove(id);
     }
 
     @Override
     public void clearSubTasks() {
+        clearHistorySubTasks();
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtasks(); // статус эпика обновляется внутри метода
+        }
+    }
+
+    private void clearHistoryTasks() {
+        for (Integer id : tasks.keySet()) {
+            historyManager.remove(id);
+        }
+    }
+
+    private void clearHistoryEpics() {
+        for (Integer id : epics.keySet()) {
+            historyManager.remove(id);
+        }
+    }
+
+    private void clearHistorySubTasks() {
+        for (Integer id : subtasks.keySet()) {
+            historyManager.remove(id);
         }
     }
 
