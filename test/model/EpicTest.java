@@ -3,10 +3,10 @@ package model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class EpicTest {
+public class EpicTest {
 
     @Test
-    void shouldBeEqualWhenIdEqual() {
+    public void shouldBeEqualWhenIdEqual() {
 
         Epic epic1 = new Epic("test1", "test1", Status.NEW);
         Epic epic2 = new Epic("test2", "test2", Status.NEW);

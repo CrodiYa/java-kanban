@@ -3,10 +3,10 @@ package model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class SubTaskTest {
+public class SubTaskTest {
 
     @Test
-    void shouldBeEqualWhenIdEqual() {
+    public void shouldBeEqualWhenIdEqual() {
         SubTask subtask1 = new SubTask("test1", "test1", Status.NEW, 2);
         SubTask subTask2 = new SubTask("test2", "test2", Status.NEW, 2);
 

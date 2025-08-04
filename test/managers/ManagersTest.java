@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ManagersTest {
+public class ManagersTest {
 
     @Test
     public void shouldBeNotNullWhenDefault() {
