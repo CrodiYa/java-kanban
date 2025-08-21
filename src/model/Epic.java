@@ -29,6 +29,10 @@ public class Epic extends Task {
         return subtaskIds;
     }
 
+    public Type getType() {
+        return Type.EPIC;
+    }
+
     @Override
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s, subtasks=%s}",
