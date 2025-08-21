@@ -15,19 +15,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     /*первая служебная строка файла*/
     private final static String FIRST_LINE = "id,type,name,status,description,epic";
 
-    private final static File FILE = new File("resources" + File.separator + "tasks.csv");
+    private final File FILE;
 
+    public FileBackedTaskManager(File file) {
+        this.FILE = file;
+    }
 
-    public static FileBackedTaskManager loadFromFile() {
+    public static FileBackedTaskManager loadFromFile(File file) {
 
-        if (!FILE.exists()) {
-            /* Если файла не существует, то возвращается пустой готовый к работе менеджер*/
-            return new FileBackedTaskManager();
+        if (!file.exists()) {
+            /* Если файла не существует, то возвращается пустой менеджер*/
+            return new FileBackedTaskManager(file);
         }
 
-        FileBackedTaskManager manager = new FileBackedTaskManager();
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE, StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             reader.readLine(); // пропуск первой служебной строки
 
             /*конечный id, который будет присвоен idCount(далее счетчик) в manager*/
