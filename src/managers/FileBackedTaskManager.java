@@ -84,7 +84,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writeSubTasks(bw, super.getSubTasks()); // записываются сабтаски
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка сохранения файла", e);
         }
     }
 
