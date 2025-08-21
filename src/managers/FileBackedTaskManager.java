@@ -7,8 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static model.Type.EPIC;
-import static model.Type.TASK;
+import static model.Type.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -24,7 +23,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(File file) {
 
         if (!file.exists()) {
-            /* Если файла не существует, то возвращается пустой менеджер*/
+            /* Если файла не существует, то возвращается пустой менеджер
+            *  с возможностью создать файл и записывать в него*/
             return new FileBackedTaskManager(file);
         }
 
@@ -58,8 +58,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     manager.addTask(new Task(title, description, status));
                 } else if (type == EPIC) {
                     manager.addEpic(new Epic(title, description, status));
-                } else {
+                } else if (type == SUBTASK) {
                     manager.addSubTask(new SubTask(title, description, status, Integer.parseInt(parts[5])));
+                } else {
+                    System.out.println("Такой формат не существует");
                 }
             }
             /*счетчик устанавливается на максимальный найденный id,
