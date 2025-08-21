@@ -59,9 +59,7 @@ public class FileBackedTaskManagerTest {
         manager = new FileBackedTaskManager(new File("blablabla/test.txt"));
 
         assertThrows(ManagerSaveException.class,
-                () -> {
-                    manager.addTask(new Task("title", "demo", Status.NEW));
-                });
+                () -> manager.addTask(new Task("title", "demo", Status.NEW)));
     }
 
     @Test

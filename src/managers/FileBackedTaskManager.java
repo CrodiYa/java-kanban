@@ -37,7 +37,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int maxId = 0;
 
             while (reader.ready()) {
-                String[] parts = reader.readLine().split(",");
+                String line = reader.readLine();
+                if (line.isBlank()) {
+                    continue;
+                }
+                String[] parts = line.split(",");
 
                 int id = Integer.parseInt(parts[0]);
 
