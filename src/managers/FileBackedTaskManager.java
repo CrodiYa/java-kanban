@@ -24,7 +24,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         if (!file.exists()) {
             /* Если файла не существует, то возвращается пустой менеджер
-            *  с возможностью создать файл и записывать в него*/
+             *  с возможностью создать файл и записывать в него*/
             return new FileBackedTaskManager(file);
         }
 
@@ -47,7 +47,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                  *  но не знает верного счетчика для каждого таска,
                  *  поэтому счетчик устанавливается на id - 1 (то есть предыдущее значение),
                  *  а уже в методе добавления счетчик увеличивается на один, устанавливая верное значение */
-                manager.idCount = id - 1;
+                manager.setIdCount(id - 1);
 
                 Type type = Type.valueOf(parts[1]);
                 String title = parts[2];
@@ -66,7 +66,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             /*счетчик устанавливается на максимальный найденный id,
              * теперь отсчет id всех новых тасков будет от этого значения*/
-            manager.idCount = maxId;
+            manager.setIdCount(maxId);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int idCount;
+    private int idCount;
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, SubTask> subtasks = new HashMap<>();
@@ -228,6 +228,14 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer id : subtasks.keySet()) {
             historyManager.remove(id);
         }
+    }
+
+    public int getIdCount() {
+        return idCount;
+    }
+
+    public void setIdCount(int id) {
+        idCount = id;
     }
 
     @Override
