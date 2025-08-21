@@ -4,6 +4,7 @@ import managers.exceptions.ManagerSaveException;
 import model.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static model.Type.EPIC;
@@ -26,7 +27,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager manager = new FileBackedTaskManager();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE, StandardCharsets.UTF_8))) {
             reader.readLine(); // пропуск первой служебной строки
 
             /*конечный id, который будет присвоен idCount(далее счетчик) в manager*/
@@ -71,7 +72,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE, StandardCharsets.UTF_8))) {
             bw.write(FIRST_LINE);
             bw.newLine();
 
