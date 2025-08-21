@@ -11,26 +11,23 @@ import static model.Type.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    /*первая служебная строка файла*/
-    private final static String FIRST_LINE = "id,type,name,status,description,epic";
+    private final File filename;
 
-    private final File FILE;
-
-    public FileBackedTaskManager(File file) {
-        this.FILE = file;
+    public FileBackedTaskManager(File filename) {
+        this.filename = filename;
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File filename) {
 
-        if (!file.exists()) {
+        if (!filename.exists()) {
             /* Если файла не существует, то возвращается пустой менеджер
              *  с возможностью создать файл и записывать в него*/
-            return new FileBackedTaskManager(file);
+            return new FileBackedTaskManager(filename);
         }
 
-        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        FileBackedTaskManager manager = new FileBackedTaskManager(filename);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename, StandardCharsets.UTF_8))) {
             reader.readLine(); // пропуск первой служебной строки
 
             /*конечный id, который будет присвоен idCount(далее счетчик) в manager*/
@@ -81,8 +78,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE, StandardCharsets.UTF_8))) {
-            bw.write(FIRST_LINE);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, StandardCharsets.UTF_8))) {
+            bw.write("id,type,name,status,description,epic"); //первая служебная строка файла
             bw.newLine();
 
             writeTasks(bw, super.getTasks()); // записываются таски
