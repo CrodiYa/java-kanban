@@ -230,6 +230,14 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public int getIdCount() {
+        return idCount;
+    }
+
+    public void setIdCount(int id) {
+        idCount = id;
+    }
+
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
