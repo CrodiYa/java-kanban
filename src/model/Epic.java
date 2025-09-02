@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -18,6 +19,7 @@ public class Epic extends Task {
     }
 
     private void setDurationAndStartTime(SubTask subTask) {
+
         if (subTask.getDuration() == null) {
             return;
         }
@@ -28,10 +30,12 @@ public class Epic extends Task {
             return;
         }
 
-        if (startTime == null) {
-            startTime = subTask.getStartTime();
-        } else {
-            startTime = startTime.isAfter(subTask.getStartTime()) ? subTask.getStartTime() : startTime;
+        LocalDateTime subtaskStartTime = subTask.getStartTime();
+
+        if (startTime == null || startTime.isAfter(subtaskStartTime)) {
+            // Обновляем время начала, если оно еще не установлено
+            // или текущее начало позже начала подзадачи
+            startTime = subtaskStartTime;
         }
     }
 
