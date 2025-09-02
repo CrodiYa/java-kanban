@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import util.Status;
 
 public class EpicTest {
 

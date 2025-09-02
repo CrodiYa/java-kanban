@@ -2,7 +2,7 @@ package managers;
 
 import managers.history.HistoryManager;
 import model.Epic;
-import model.Status;
+import util.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Test;
