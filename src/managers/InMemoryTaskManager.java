@@ -128,35 +128,46 @@ public class InMemoryTaskManager implements TaskManager {
         updateEpicStatus(epics.get(oldSubTask.getEpicId())); //обновляем статус эпика
     }
 
+    /**
+     * Обновляет статус эпика на основе статусов его подзадач.
+     * Статус эпика определяется по следующим правилам:
+     * <ul>
+     *   <li>Если у эпика нет подзадач - статус устанавливается в {@link Status#NEW}</li>
+     *   <li>Если все подзадачи имеют статус {@link Status#NEW} - эпик получает статус {@link Status#NEW}</li>
+     *   <li>Если все подзадачи имеют статус {@link Status#DONE} - эпик получает статус {@link Status#DONE}</li>
+     *   <li>В остальных случаях (смешанные статусы или подзадачи в процессе выполнения) -
+     *       эпик получает статус {@link Status#IN_PROGRESS}</li>
+     * </ul>
+     *
+     * @param epic эпик, статус которого следует обновить.
+     * @implNote Вызывается при добавлении, удалении или изменении подзадачи эпика.
+     */
     private void updateEpicStatus(Epic epic) {
-        ArrayList<Integer> epicChildren = epic.getSubtaskIds();
+        List<Integer> epicChildren = epic.getSubtaskIds();
         if (epicChildren.isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
         }
 
-        int subTasksDone = 0;
-        int subTasksNotNew = 0;
+        int total = epicChildren.size();
+        int doneCount = 0;
+        int newCount = 0;
 
         for (Integer id : epicChildren) {
             Status status = subtasks.get(id).getStatus();
-            if (status != Status.NEW) {
-                subTasksNotNew++;
-            }
-            if (status == Status.DONE) {
-                subTasksDone++;
+            if (status == Status.NEW) {
+                newCount++;
+            } else if (status == Status.DONE) {
+                doneCount++;
             }
         }
 
-        if (subTasksNotNew != 0) {
-            epic.setStatus(Status.IN_PROGRESS);
-        } else {
+        if (total == newCount) {
             epic.setStatus(Status.NEW);
-            return;
-        }
-
-        if (subTasksDone != 0 && subTasksDone == epicChildren.size()) {
+        } else if (total == doneCount) {
             epic.setStatus(Status.DONE);
+        } else {
+            epic.setStatus(Status.IN_PROGRESS);
         }
     }
 
