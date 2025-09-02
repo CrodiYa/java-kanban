@@ -1,10 +1,14 @@
 package model;
 
+import util.Status;
+import util.Type;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task> {
     protected int taskId;
     protected String title;
     protected String description;
@@ -94,13 +98,21 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("%s{id=%d, title=%s, description=%s, status=%s}",
-                this.getClass(),
+        return String.format("%s{id=%d, title=%s, description=%s, status=%s,\n    startTime=[%s], duration=[%s], endTime=[%s]}\n",
+                this.getClass().getName(),
                 taskId,
                 title,
                 description,
-                status
+                status,
+                formatDateTime(startTime),
+                duration,
+                formatDateTime(getEndTime())
         );
+    }
+
+    protected String formatDateTime(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy | HH:mm");
+        return dateTime == null ? null : dateTime.format(formatter);
     }
 
     @Override
@@ -114,4 +126,16 @@ public class Task {
                 this.taskId == copy.taskId;
     }
 
+    @Override
+    public int compareTo(Task t) {
+        LocalDateTime tStartTime = t.getStartTime();
+
+        if (this.startTime.isAfter(tStartTime)) {
+            return 1;
+        } else if (this.startTime.equals(tStartTime)) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
 }

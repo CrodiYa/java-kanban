@@ -2,26 +2,30 @@ package managers;
 
 import managers.history.HistoryManager;
 import model.Epic;
-import model.Status;
+import util.Status;
 import model.SubTask;
 import model.Task;
+import util.TaskTimeController;
+import util.exceptions.TaskTimeOverlapException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCount;
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, SubTask> subtasks = new HashMap<>();
-
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final TaskTimeController taskTimeController = new TaskTimeController();
 
     @Override
     public void addTask(Task task) {
+        if (taskTimeController.isTimeOverlapping(task)) {
+            throw new TaskTimeOverlapException("Can`t add task: " + task);
+        }
         task.setTaskId(++idCount);
         tasks.put(task.getTaskId(), task);
+        taskTimeController.add(task);
     }
 
     @Override
@@ -32,12 +36,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubTask(SubTask subTask) {
+        if (taskTimeController.isTimeOverlapping(subTask)) {
+            throw new TaskTimeOverlapException("Can`t add task: " + subTask);
+        }
         subTask.setTaskId(++idCount);
         subtasks.put(subTask.getTaskId(), subTask);
 
         Epic epic = epics.get(subTask.getEpicId());
         epic.addSubTask(subTask);
         updateEpicStatus(epic);
+
+        taskTimeController.add(subTask);
     }
 
     @Override
@@ -86,6 +95,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         return subTasksList;
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return List.copyOf(taskTimeController.getTimeSortedTasks());
     }
 
     @Override
@@ -153,12 +167,14 @@ public class InMemoryTaskManager implements TaskManager {
         }
         historyManager.remove(id); // удаляем из истории
         tasks.remove(id);
+        taskTimeController.remove(id);
     }
 
     @Override
     public void clearTasks() {
         clearHistoryTasks();
         tasks.clear();
+        taskTimeController.removeTasks();
     }
 
     @Override
@@ -201,6 +217,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         historyManager.remove(id); // удаляем из истории
         subtasks.remove(id);
+        taskTimeController.remove(id);
     }
 
     @Override
@@ -210,6 +227,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.clearSubtasks(); // статус эпика обновляется внутри метода
         }
+        taskTimeController.removeSubTasks();
     }
 
     private void clearHistoryTasks() {

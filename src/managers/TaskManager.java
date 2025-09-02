@@ -20,13 +20,15 @@ public interface TaskManager {
 
     SubTask getSubTask(int id);
 
-    ArrayList<Task> getTasks();
+    List<Task> getTasks();
 
-    ArrayList<Epic> getEpics();
+    List<Epic> getEpics();
 
-    ArrayList<SubTask> getSubTasks();
+    List<SubTask> getSubTasks();
 
-    ArrayList<SubTask> getSubTasksFromEpic(int id);
+    List<SubTask> getSubTasksFromEpic(int id);
+
+    List<Task> getPrioritizedTasks();
 
     void updateTask(Task task);
 
