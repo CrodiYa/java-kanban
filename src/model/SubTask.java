@@ -1,5 +1,8 @@
 package model;
 
+import util.Status;
+import util.Type;
+
 import java.time.LocalDateTime;
 
 public class SubTask extends Task {
@@ -35,13 +38,16 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("%s{id=%d, title=%s, description=%s, status=%s, epicId=%d}",
-                this.getClass(),
+        return String.format("%s{id=%d, title=%s, description=%s, status=%s, epicId=%d,\n    startTime=[%s], duration=[%s], endTime=[%s]}\n",
+                this.getClass().getName(),
                 this.taskId,
                 this.title,
                 this.description,
                 this.status,
-                this.epicId
+                this.epicId,
+                formatDateTime(startTime),
+                duration,
+                formatDateTime(getEndTime())
         );
     }
 }
