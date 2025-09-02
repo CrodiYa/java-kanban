@@ -12,9 +12,28 @@ public class Epic extends Task {
     }
 
     public void addSubTask(SubTask subTask) {
+
+        setDurationAndStartTime(subTask);
         subtaskIds.add(subTask.getTaskId());
     }
 
+    private void setDurationAndStartTime(SubTask subTask) {
+        if (subTask.getDuration() == null) {
+            return;
+        }
+
+        duration = duration == null ? subTask.getDuration() : duration.plus(subTask.getDuration());
+
+        if (subTask.getStartTime() == null) {
+            return;
+        }
+
+        if (startTime == null) {
+            startTime = subTask.getStartTime();
+        } else {
+            startTime = startTime.isAfter(subTask.getStartTime()) ? subTask.getStartTime() : startTime;
+        }
+    }
 
     public void deleteSubTask(int id) {
         subtaskIds.remove(Integer.valueOf(id));
