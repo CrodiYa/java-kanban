@@ -11,8 +11,6 @@ import util.exceptions.TaskTimeOverlapException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCount;
@@ -50,6 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTask(subTask);
         updateEpicStatus(epic);
 
+        taskTimeController.updateEpicDurationAndStartTime(epic, subTask);
         taskTimeController.add(subTask);
     }
 
@@ -177,7 +176,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(id)) {
             return;
         }
-        historyManager.remove(id); // удаляем из истории
+        historyManager.remove(id);
         taskTimeController.remove(tasks.get(id)); // удаляем объект т.к это быстрее, чем удаление по id
         tasks.remove(id);
     }
@@ -189,22 +188,42 @@ public class InMemoryTaskManager implements TaskManager {
         taskTimeController.removeTasks();
     }
 
+    /**
+     * Удаляет эпик по идентификатору вместе со всеми его подзадачами.
+     *
+     * <p>Выполняет следующие операции при удалении эпика:
+     * <ol>
+     *   <li>Для каждой подзадачи эпика:
+     *     <ul>
+     *       <li>Удаляет подзадачу из истории просмотров</li>
+     *       <li>Удаляет подзадачу из контроллера временных промежутков</li>
+     *       <li>Удаляет подзадачу из основной таблицы подзадач</li>
+     *     </ul>
+     *   </li>
+     *   <li>Удаляет эпик из истории просмотров</li>
+     *   <li>Удаляет эпик из таблицы эпиков</li>
+     * </ol>
+     *
+     * <p>Если эпик с указанным идентификатором не существует, метод завершается
+     * без выполнения каких-либо операций.
+     *
+     * @param epicId идентификатор эпика для удаления; должен быть положительным числом
+     */
     @Override
-    public void deleteEpic(int id) {
-        if (!epics.containsKey(id)) {
+    public void deleteEpic(int epicId) {
+        if (!epics.containsKey(epicId)) {
             return;
         }
-        Epic epic = epics.get(id);
+        Epic epic = epics.get(epicId);
 
-        for (Integer subtaskId : epic.getSubtaskIds()) { // удаляем из основной таблицы подзадач каждую подзадачу эпика
-            historyManager.remove(subtaskId); // удаляем подзадачу из истории
+        for (Integer subtaskId : epic.getSubtaskIds()) {
+            historyManager.remove(subtaskId);
             taskTimeController.remove(subtasks.get(subtaskId));
             subtasks.remove(subtaskId);
         }
 
-        historyManager.remove(id); // удаляем эпик из истории
-        epics.remove(id);
-
+        historyManager.remove(epicId);
+        epics.remove(epicId);
     }
 
     @Override
@@ -217,20 +236,39 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
     }
 
+    /**
+     * Удаляет подзадачу по идентификатору и выполняет связанные обновления.
+     *
+     * <p>Выполняет следующие операции при удалении подзадачи:
+     * <ol>
+     *   <li>Удаляет подзадачу из списка подзадач эпика</li>
+     *   <li>Обновляет статус эпика с учетом оставшихся подзадач</li>
+     *   <li>Удаляет подзадачу из истории просмотров</li>
+     *   <li>Удаляет подзадачу из контроллера временных интервалов</li>
+     *   <li>Обновляет временные параметры эпика (длительность и время начала)</li>
+     *   <li>Удаляет подзадачу из основной таблицы подзадач</li>
+     * </ol>
+     *
+     * <p>Если подзадача с указанным идентификатором не существует, метод завершается
+     * без выполнения каких-либо операций.
+     *
+     * @param id идентификатор подзадачи для удаления
+     */
     @Override
     public void deleteSubTask(int id) {
         if (!subtasks.containsKey(id)) {
             return;
         }
-
-        int epicParentId = subtasks.get(id).getEpicId();
-        // удаляем подзадачу из листа эпика, пересчитываем статус
+        SubTask subTask = subtasks.get(id);
+        int epicParentId = subTask.getEpicId();
         Epic epic = epics.get(epicParentId);
+
         epic.deleteSubTask(id);
         updateEpicStatus(epic);
 
-        historyManager.remove(id); // удаляем из истории
-        taskTimeController.remove(subtasks.get(id));
+        historyManager.remove(id);
+        taskTimeController.remove(subTask);
+        taskTimeController.updateEpicDurationAndStartTimeDeletion(epic, subTask);
         subtasks.remove(id);
     }
 
@@ -238,7 +276,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearSubTasks() {
         subtasks.forEach((id, subTask) -> historyManager.remove(id));
 
-        epics.forEach((id, epic) -> epic.clearSubtasks()); // статус эпика обновляется внутри метода
+        // статус и временные параметры эпика обновляется внутри метода clearSubtasks()
+        epics.forEach((id, epic) -> epic.clearSubtasks());
 
         taskTimeController.removeSubTasks();
 
