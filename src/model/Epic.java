@@ -3,8 +3,10 @@ package model;
 import util.Status;
 import util.Type;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
 
@@ -16,45 +18,7 @@ public class Epic extends Task {
     }
 
     public void addSubTask(SubTask subTask) {
-
-        setDurationAndStartTime(subTask);
         subtaskIds.add(subTask.getTaskId());
-    }
-
-    /**
-     * Обновляет длительность и время начала эпика на основе добавляемой подзадачи.
-     *
-     * <p><b>Длительность:</b> Суммируется длительность всех подзадач эпика.
-     * Если текущая длительность равна {@code null}, устанавливается длительность подзадачи.
-     *
-     * <p><b>Время начала:</b> Устанавливается самое раннее время начала среди всех подзадач.
-     * Если время начала подзадачи раньше текущего времени начала эпика или время начала эпика
-     * не установлено, время начала эпика обновляется.
-     *
-     * <p>Метод игнорирует подзадачи с отсутствующими временными параметрами ({@code null}).
-     *
-     * @param subTask подзадача, на основе которой обновляются параметры эпика
-     * @implNote Метод вызывается при добавлении каждой новой подзадачи к эпику
-     */
-    private void setDurationAndStartTime(SubTask subTask) {
-
-        if (subTask.getDuration() == null) {
-            return;
-        }
-
-        duration = duration == null ? subTask.getDuration() : duration.plus(subTask.getDuration());
-
-        if (subTask.getStartTime() == null) {
-            return;
-        }
-
-        LocalDateTime subtaskStartTime = subTask.getStartTime();
-
-        if (startTime == null || startTime.isAfter(subtaskStartTime)) {
-            // Обновляем время начала, если оно еще не установлено
-            // или текущее начало позже начала подзадачи
-            startTime = subtaskStartTime;
-        }
     }
 
     public void deleteSubTask(int id) {
@@ -64,14 +28,58 @@ public class Epic extends Task {
     public void clearSubtasks() {
         subtaskIds.clear();
         this.setStatus(Status.NEW);
+        this.duration = null;
+        this.startTime = null;
     }
 
-    public ArrayList<Integer> getSubtaskIds() {
-        return subtaskIds;
+    public List<Integer> getSubtaskIds() {
+        return List.copyOf(subtaskIds);
     }
 
     public Type getType() {
         return Type.EPIC;
+    }
+
+    /**
+     * Устанавливает или добавляет длительность эпика в минутах.
+     *
+     * <p>Если текущая длительность эпика равна {@code null}, устанавливает длительность
+     * равной указанному количеству минут. Если длительность уже установлена, добавляет
+     * указанное количество минут к существующей длительности.
+     *
+     * @param durationInMinutes длительность в минутах для добавления к эпику;
+     */
+    public void setEpicDuration(long durationInMinutes) {
+        this.duration = this.duration == null ? Duration.ofMinutes(durationInMinutes) : this.duration.plusMinutes(durationInMinutes);
+    }
+
+    /**
+     * Устанавливает или добавляет длительность эпика.
+     *
+     * <p>Если текущая длительность эпика равна {@code null}, устанавливает длительность
+     * равной указанной длительности. Если длительность уже установлена, добавляет
+     * указанную длительность к существующей.
+     *
+     * @param duration длительность для добавления к эпику
+     * @apiNote Предпочтительный метод для работы с временными интервалами
+     */
+    public void setEpicDuration(Duration duration) {
+        this.duration = this.duration == null ? duration : this.duration.plus(duration);
+    }
+
+    /**
+     * Устанавливает или обновляет время начала эпика.
+     *
+     * <p>Устанавливает время начала эпика, если оно еще не установлено ({@code null}).
+     * Если время начала уже установлено, обновляет его только если новое время начала
+     * раньше текущего (минимальное время среди всех подзадач).
+     *
+     * @param startTime время начала для установки или сравнения;
+     */
+    public void setEpicStartTime(LocalDateTime startTime) {
+        if (this.startTime == null || this.startTime.isAfter(startTime)) {
+            this.startTime = startTime;
+        }
     }
 
     @Override
