@@ -43,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(task)) {
-            throw new TaskTimeOverlapException("Can`t add task: " + task);
+            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + task);
         }
         task.setTaskId(++idCount);
         tasks.put(task.getTaskId(), task);
@@ -59,7 +59,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubTask(SubTask subTask) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(subTask)) {
-            throw new TaskTimeOverlapException("Can`t add task: " + subTask);
+            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + subTask);
         }
         subTask.setTaskId(++idCount);
         subtasks.put(subTask.getTaskId(), subTask);
