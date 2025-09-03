@@ -12,6 +12,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Реализация менеджера задач, хранящая данные в оперативной памяти.
+ *
+ * <p>Обеспечивает полный набор операций для управления задачами, эпиками и подзадачами:
+ * <ul>
+ *   <li>Добавление, обновление и удаление задач</li>
+ *   <li>Автоматическое управление статусами эпиков</li>
+ *   <li>Контроль временных пересечений задач</li>
+ *   <li>Ведение истории просмотров задач</li>
+ *   <li>Поддержка списка задач в порядке приоритета</li>
+ * </ul>
+ *
+ * <p>Использует следующие компоненты:
+ * <ul>
+ *   <li>{@link HistoryManager} для ведения истории просмотров</li>
+ *   <li>{@link TaskTimeController} для контроля временных интервалов</li>
+ * </ul>
+ *
+ * @implSpec Все операции работают с данными в оперативной памяти
+ */
 public class InMemoryTaskManager implements TaskManager {
     private int idCount;
     private final HashMap<Integer, Task> tasks = new HashMap<>();

@@ -1,12 +1,16 @@
 package managers;
 
+import java.util.List;
+
 import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Интерфейс менеджера задач для управления задачами, эпиками и подзадачами.
+ *
+ * @apiNote Реализации могут добавлять дополнительные проверки (например, временные пересечения)
+ */
 public interface TaskManager {
     void addTask(Task task);
 
