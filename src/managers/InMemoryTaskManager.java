@@ -68,7 +68,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTask(subTask);
         updateEpicStatus(epic);
 
-        taskTimeController.updateEpicDurationAndStartTime(epic, subTask);
+        taskTimeController.updateEpicTimeParams(epic, subTask);
         taskTimeController.add(subTask);
     }
 
@@ -288,7 +288,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         historyManager.remove(id);
         taskTimeController.remove(subTask);
-        taskTimeController.updateEpicDurationAndStartTimeDeletion(epic, subTask);
+        taskTimeController.updateEpicTimeParamsDeletion(epic, subTask);
         subtasks.remove(id);
     }
 
