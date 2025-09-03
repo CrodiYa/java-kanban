@@ -1,7 +1,12 @@
 package util;
 
+import model.Epic;
+import model.SubTask;
 import model.Task;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.TreeSet;
 
 /**
@@ -11,7 +16,7 @@ import java.util.TreeSet;
  *
  * <p>Класс предназначен для использования менеджерами задач для валидации временных промежутков
  * и обеспечения отсутствия конфликтов в расписании. Игнорирует попытки добавить эпики и задачи
- * без установленных временных параметров.
+ * без установленных временных параметров. Управляет временем начала и длительностью эпиков.
  */
 public class TaskTimeController {
 
@@ -67,6 +72,70 @@ public class TaskTimeController {
         return false;
     }
 
+    /**
+     * Обновляет временные параметры эпика при добавлении подзадачи.
+     *
+     * <p><b>Длительность:</b> При помощи метода {@link model.Epic#setEpicDuration(java.time.Duration)}
+     * суммируется длительность всех подзадач эпика.
+     * Если текущая длительность равна {@code null}, устанавливается длительность подзадачи.
+     *
+     * <p><b>Время начала:</b> Устанавливается самое раннее время начала среди всех подзадач при помощи
+     * {@link Epic#setEpicStartTime(LocalDateTime)}.
+     * Если время начала подзадачи раньше текущего времени начала эпика или время начала эпика
+     * не установлено, время начала эпика обновляется.
+     *
+     * <p>Метод игнорирует подзадачи с отсутствующими временными параметрами ({@code null}).
+     *
+     * @param epic    эпик, параметры которого следует обновить
+     * @param subTask подзадача, на основе которой обновляются параметры эпика
+     * @implNote Метод вызывается при добавлении/удалении подзадачи
+     */
+    public void updateEpicDurationAndStartTime(Epic epic, SubTask subTask) {
+
+        if (subTask.getDuration() != null) {
+            return;
+        }
+
+        epic.setEpicDuration(subTask.getDuration());
+
+        if (subTask.getStartTime() == null) {
+            return;
+        }
+
+        epic.setEpicStartTime(subTask.getStartTime());
+    }
+
+    /**
+     * Обновляет временные параметры эпика после удаления подзадачи.
+     *
+     * <p>Выполняет следующие операции:
+     * <ul>
+     *   <li>Находит подзадачу с самым ранним временем начала среди оставшихся подзадач</li>
+     *   <li>Устанавливает время начала эпика равным времени начала найденной подзадачи</li>
+     *   <li>Если подзадач не осталось, сбрасывает время начала эпика в {@code null}</li>
+     *   <li>Уменьшает общую длительность эпика на длительность удаляемой подзадачи</li>
+     * </ul>
+     *
+     * @param epic    эпик, временные параметры которого следует обновить
+     * @param subtask удаляемая подзадача; используется для вычитания её длительности
+     * @implNote Метод должен вызываться непосредственно после удаления подзадачи из эпика и {@code timeSortedTask}
+     */
+    public void updateEpicDurationAndStartTimeDeletion(Epic epic, SubTask subtask) {
+
+        Optional<SubTask> newStartTime = timeSortedTasks.stream()
+                .filter(task -> task.getType() == Type.SUBTASK)
+                .map(task -> (SubTask) task)
+                .min(Comparator.comparing(Task::getStartTime));
+
+        if (newStartTime.isPresent()) {
+            epic.setStartTime(newStartTime.get().getStartTime());
+            epic.setEpicDuration(-subtask.getDuration().toMinutes());
+        } else {
+            epic.setStartTime(null);
+            epic.setDuration(null);
+        }
+    }
+
     private boolean hasMissingTimeFields(Task task) {
         return task.getDuration() == null || task.getStartTime() == null;
     }
@@ -90,6 +159,17 @@ public class TaskTimeController {
         timeSortedTasks.remove(task);
     }
 
+    /**
+     * Удаляет задачу или подзадачу из отсортированной коллекции по идентификатору.
+     *
+     * <p>Метод выполняет поиск элемента с указанным идентификатором и удаляет его
+     * из внутренней отсортированной коллекции временных интервалов.
+     *
+     * <p><b>Не рекомендуется для общего использования</b> - метод следует использовать только
+     * если нет доступа к объекту задачи и известен только {@code id}.
+     *
+     * @param id идентификатор задачи для удаления
+     */
     public void remove(int id) {
         timeSortedTasks.removeIf(element -> element.getTaskId() == id);
     }
@@ -97,7 +177,7 @@ public class TaskTimeController {
     /**
      * Удаляет все задачи типа {@link Type#TASK} из коллекции.
      *
-     * @apiNote Используется для выборочной очистки только обычных задач
+     * @apiNote Используется для выборочной очистки обычных задач
      */
     public void removeTasks() {
         timeSortedTasks.removeIf(element -> element.getType() == Type.TASK);
@@ -106,7 +186,7 @@ public class TaskTimeController {
     /**
      * Удаляет все задачи типа {@link Type#SUBTASK} из коллекции.
      *
-     * @apiNote Используется для выборочной очистки только подзадач
+     * @apiNote Используется для выборочной очистки подзадач
      */
     public void removeSubTasks() {
         timeSortedTasks.removeIf(element -> element.getType() == Type.SUBTASK);
