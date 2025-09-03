@@ -22,7 +22,7 @@ public class Task implements Comparable<Task> {
         this.status = status;
     }
 
-    public Task(String title, String description, Status status, int durationInMinutes, LocalDateTime startTime) {
+    public Task(String title, String description, Status status, long durationInMinutes, LocalDateTime startTime) {
         this.title = title;
         this.description = description;
         this.status = status;
@@ -30,11 +30,26 @@ public class Task implements Comparable<Task> {
         this.startTime = startTime;
     }
 
-    public Task(String title, String description, Status status, int durationInMinutes) {
+    public Task(String title, String description, Status status, long durationInMinutes) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(durationInMinutes);
+    }
+
+    public Task(String title, String description, Status status, Duration duration, LocalDateTime startTime) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(String title, String description, Status status, Duration duration) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
     }
 
     public int getTaskId() {

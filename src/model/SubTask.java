@@ -3,6 +3,7 @@ package model;
 import util.Status;
 import util.Type;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SubTask extends Task {
@@ -17,14 +18,29 @@ public class SubTask extends Task {
                    String description,
                    Status status,
                    int epicId,
-                   int durationInMinutes,
+                   long durationInMinutes,
                    LocalDateTime startTime) {
         super(title, description, status, durationInMinutes, startTime);
         this.epicId = epicId;
     }
 
-    public SubTask(String title, String description, Status status, int epicId, int durationInMinutes) {
+    public SubTask(String title, String description, Status status, int epicId, long durationInMinutes) {
         super(title, description, status, durationInMinutes);
+        this.epicId = epicId;
+    }
+
+    public SubTask(String title,
+                   String description,
+                   Status status,
+                   int epicId,
+                   Duration duration,
+                   LocalDateTime startTime) {
+        super(title, description, status, duration, startTime);
+        this.epicId = epicId;
+    }
+
+    public SubTask(String title, String description, Status status, int epicId, Duration duration) {
+        super(title, description, status, duration);
         this.epicId = epicId;
     }
 
