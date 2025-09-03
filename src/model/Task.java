@@ -132,14 +132,6 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task t) {
-        LocalDateTime tStartTime = t.getStartTime();
-
-        if (this.startTime.isAfter(tStartTime)) {
-            return 1;
-        } else if (this.startTime.equals(tStartTime)) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return this.startTime.compareTo(t.getStartTime());
     }
 }
