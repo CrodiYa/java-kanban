@@ -85,6 +85,10 @@ public class Task implements Comparable<Task> {
         this.duration = duration;
     }
 
+    public void setDuration(long durationInMinutes) {
+        this.duration = Duration.ofMinutes(durationInMinutes);
+    }
+
     public LocalDateTime getEndTime() {
         if (startTime == null || duration == null) {
             return null;
