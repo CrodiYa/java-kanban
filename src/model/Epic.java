@@ -11,6 +11,7 @@ import java.util.List;
 public class Epic extends Task {
 
     private final ArrayList<Integer> subtaskIds;
+    private LocalDateTime endTime;
 
     public Epic(String title, String description, Status status) {
         super(title, description, status);
@@ -82,6 +83,30 @@ public class Epic extends Task {
         }
     }
 
+    /**
+     * Устанавливает или обновляет время конца эпика.
+     *
+     * <p>Устанавливает время конца эпика, если оно еще не установлено ({@code null}).
+     * Если время конца уже установлено, обновляет его только если новое время конца
+     * позже текущего (максимальное время среди всех подзадач).
+     *
+     * @param endTime время начала для установки или сравнения;
+     */
+    public void setEpicEndTime(LocalDateTime endTime) {
+        if (this.endTime == null || this.endTime.isBefore(endTime)) {
+            this.endTime = endTime;
+        }
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
     @Override
     public String toString() {
         return String.format("%s{id=%d, title=%s, description=%s, status=%s, subtasks=%s,\n    startTime=[%s], duration=[%s], endTime=[%s]}\n",
@@ -93,7 +118,7 @@ public class Epic extends Task {
                 this.subtaskIds,
                 formatDateTime(startTime),
                 duration,
-                formatDateTime(getEndTime())
+                formatDateTime(this.getEndTime())
         );
     }
 
