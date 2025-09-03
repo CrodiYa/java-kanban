@@ -6,6 +6,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Менеджер истории просмотров задач, реализованный на двусвязном списке.
+ *
+ * <p>Обеспечивает хранение истории просмотров задач с соблюдением порядка просмотра
+ * и быстрым доступом к элементам через хэш-таблицу.
+ *
+ * <p>Реализация использует комбинацию HashMap для быстрого поиска узлов
+ * и двусвязного списка для поддержания порядка элементов.
+ *
+ * @apiNote Все операции выполняются за время O(1), кроме {@link #getHistory()} - O(n)
+ */
 public class InMemoryHistoryManager implements HistoryManager {
     private Node head;
     private Node tail;
@@ -37,6 +48,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         return getTasks();
     }
 
+    /**
+     * Добавляет задачу в конец двусвязного списка.
+     *
+     * <p>Создает новый узел для задачи и добавляет его в хвост списка.
+     *
+     * @param task задача для добавления в список
+     * @return созданный узел, содержащий задачу
+     */
     private Node linkLast(Task task) {
         Node newNode = new Node(tail, task, null);
 
@@ -52,6 +71,17 @@ public class InMemoryHistoryManager implements HistoryManager {
         return newNode;
     }
 
+    /**
+     * Удаляет узел из двусвязного списка.
+     * <p>Обрабатывает все возможные случаи:
+     * <ul>
+     *   <li>Удаление головного узла</li>
+     *   <li>Удаление хвостового узла</li>
+     *   <li>Удаление узла из середины списка</li>
+     * </ul>
+     *
+     * @param node узел для удаления
+     */
     private void removeNode(Node node) {
         Node next = node.getNext();
         Node prev = node.getPrev();
@@ -74,11 +104,19 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     }
 
+    /**
+     * Возвращает список задач в порядке их просмотра.
+     *
+     * <p>Выполняет обход двусвязного списка от головы к хвосту и собирает все задачи
+     * в список. Порядок элементов соответствует порядку просмотра (от старых к новым).
+     *
+     * @return неизменяемый список задач в порядке просмотра
+     * @apiNote Возвращаемый список является копией, изменения не влияют на внутреннее состояние
+     */
     private List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node current = head; // копия головы, чтобы избежать потери
 
-        // проходим через всю последовательность и добавляем задачу в список
         while (current != null) {
             tasks.add(current.getTask());
             current = current.getNext();
