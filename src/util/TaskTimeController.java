@@ -4,13 +4,11 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Контроллер для управления временными интервалами задач.
@@ -97,7 +95,7 @@ public class TaskTimeController {
      * @implNote Метод вызывается при добавлении подзадачи
      */
     public void updateEpicTimeParams(Epic epic, SubTask subTask) {
-        if (subTask.getDuration() == null || subTask.getStartTime() == null) {
+        if (hasMissingTimeFields(subTask)) {
             return;
         }
 
@@ -120,14 +118,15 @@ public class TaskTimeController {
      *   <li><b>Очистка параметров:</b> Если подзадач не осталось, сбрасывает все временные параметры в {@code null}.</li>
      * </ul>
      *
-     * @param epic              эпик, параметры которого следует обновить
-     * @param durationToSubtract длительность, которую следует вычесть
+     * @param epic    эпик, параметры которого следует обновить
+     * @param subtask подзадача, длительность которой следует вычесть
      * @implSpec Метод вызывается <b>после</b> удаления подзадачи из эпика
      * @apiNote Метод пересчитывает параметры на основе всех оставшихся подзадач
      */
-    public void updateEpicTimeParamsDeletion(Epic epic, Duration durationToSubtract) {
+    public void updateEpicTimeParamsDeletion(Epic epic, SubTask subtask) {
+        if (hasMissingTimeFields(subtask)) return;
 
-        epic.setEpicDuration(-durationToSubtract.toMinutes()); // в любом случае удаляем
+        epic.setEpicDuration(-subtask.getDuration().toMinutes()); // в любом случае удаляем
 
         List<SubTask> subtasks = timeSortedTasks.stream() // получаем список подзадач
                 .filter(task -> task.getType() == Type.SUBTASK)
