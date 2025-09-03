@@ -4,10 +4,13 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для управления временными интервалами задач.
@@ -75,65 +78,73 @@ public class TaskTimeController {
     /**
      * Обновляет временные параметры эпика при добавлении подзадачи.
      *
-     * <p><b>Длительность:</b> При помощи метода {@link model.Epic#setEpicDuration(java.time.Duration)}
-     * суммируется длительность всех подзадач эпика.
-     * Если текущая длительность равна {@code null}, устанавливается длительность подзадачи.
-     *
-     * <p><b>Время начала:</b> Устанавливается самое раннее время начала среди всех подзадач при помощи
-     * {@link Epic#setEpicStartTime(LocalDateTime)}.
-     * Если время начала подзадачи раньше текущего времени начала эпика или время начала эпика
-     * не установлено, время начала эпика обновляется.
-     *
+     * <p>Выполняет следующие операции:
+     * <ul>
+     *   <li><b>Длительность:</b> Добавляет длительность подзадачи к общей длительности эпика
+     *       с помощью {@link Epic#setEpicDuration(java.time.Duration)}. Если текущая длительность
+     *       равна {@code null}, устанавливается длительность подзадачи.</li>
+     *   <li><b>Время начала:</b> Устанавливает время начала эпика равным времени начала подзадачи
+     *       с помощью {@link Epic#setEpicStartTime(LocalDateTime)}, если оно раньше текущего
+     *       или если время начала эпика не установлено.</li>
+     *   <li><b>Время окончания:</b> Устанавливает время окончания эпика равным времени окончания подзадачи
+     *       с помощью {@link Epic#setEpicEndTime(LocalDateTime)}, если оно позже текущего
+     *       или если время окончания эпика не установлено.</li>
+     * </ul>
      * <p>Метод игнорирует подзадачи с отсутствующими временными параметрами ({@code null}).
      *
      * @param epic    эпик, параметры которого следует обновить
      * @param subTask подзадача, на основе которой обновляются параметры эпика
-     * @implNote Метод вызывается при добавлении/удалении подзадачи
+     * @implNote Метод вызывается при добавлении подзадачи
      */
-    public void updateEpicDurationAndStartTime(Epic epic, SubTask subTask) {
-
-        if (subTask.getDuration() != null) {
+    public void updateEpicTimeParams(Epic epic, SubTask subTask) {
+        if (subTask.getDuration() == null || subTask.getStartTime() == null) {
             return;
         }
 
         epic.setEpicDuration(subTask.getDuration());
-
-        if (subTask.getStartTime() == null) {
-            return;
-        }
-
         epic.setEpicStartTime(subTask.getStartTime());
+        epic.setEpicEndTime(subTask.getEndTime());
     }
 
     /**
-     * Обновляет временные параметры эпика после удаления подзадачи.
+     * Обновляет временные параметры эпика при удалении подзадачи.
      *
      * <p>Выполняет следующие операции:
      * <ul>
-     *   <li>Находит подзадачу с самым ранним временем начала среди оставшихся подзадач</li>
-     *   <li>Устанавливает время начала эпика равным времени начала найденной подзадачи</li>
-     *   <li>Если подзадач не осталось, сбрасывает время начала эпика в {@code null}</li>
-     *   <li>Уменьшает общую длительность эпика на длительность удаляемой подзадачи</li>
+     *   <li><b>Длительность:</b> Уменьшает общую длительность эпика на длительность удаляемой подзадачи
+     *       с помощью {@link Epic#setEpicDuration(java.time.Duration)}.</li>
+     *   <li><b>Время начала:</b> Находит самое раннее время начала среди оставшихся подзадач
+     *       и устанавливает его как время начала эпика.</li>
+     *   <li><b>Время окончания:</b> Находит самое позднее время окончания среди оставшихся подзадач
+     *       и устанавливает его как время окончания эпика.</li>
+     *   <li><b>Очистка параметров:</b> Если подзадач не осталось, сбрасывает все временные параметры в {@code null}.</li>
      * </ul>
      *
-     * @param epic    эпик, временные параметры которого следует обновить
-     * @param subtask удаляемая подзадача; используется для вычитания её длительности
-     * @implNote Метод должен вызываться непосредственно после удаления подзадачи из эпика и {@code timeSortedTask}
+     * @param epic              эпик, параметры которого следует обновить
+     * @param durationToSubtract длительность, которую следует вычесть
+     * @implSpec Метод вызывается <b>после</b> удаления подзадачи из эпика
+     * @apiNote Метод пересчитывает параметры на основе всех оставшихся подзадач
      */
-    public void updateEpicDurationAndStartTimeDeletion(Epic epic, SubTask subtask) {
+    public void updateEpicTimeParamsDeletion(Epic epic, Duration durationToSubtract) {
 
-        Optional<SubTask> newStartTime = timeSortedTasks.stream()
+        epic.setEpicDuration(-durationToSubtract.toMinutes()); // в любом случае удаляем
+
+        List<SubTask> subtasks = timeSortedTasks.stream() // получаем список подзадач
                 .filter(task -> task.getType() == Type.SUBTASK)
-                .map(task -> (SubTask) task)
-                .min(Comparator.comparing(Task::getStartTime));
+                .map(task -> (SubTask) task).toList();
 
-        if (newStartTime.isPresent()) {
-            epic.setStartTime(newStartTime.get().getStartTime());
-            epic.setEpicDuration(-subtask.getDuration().toMinutes());
-        } else {
+        if (subtasks.isEmpty()) {
             epic.setStartTime(null);
             epic.setDuration(null);
+            epic.setEndTime(null);
+            return;
         }
+
+        Optional<SubTask> newEndTime = subtasks.stream().max(Comparator.comparing(Task::getEndTime));
+        epic.setEndTime(newEndTime.get().getEndTime());
+
+        Optional<SubTask> newStartTime = subtasks.stream().min(Comparator.comparing(Task::getStartTime));
+        epic.setStartTime(newStartTime.get().getStartTime());
     }
 
     private boolean hasMissingTimeFields(Task task) {
