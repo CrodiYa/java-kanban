@@ -210,9 +210,9 @@ public class TaskTimeController {
      * Возвращает неизменяемую копию отсортированного набора задач.
      * Изменения в возвращаемой коллекции не влияют на внутреннее состояние.
      *
-     * @return неизменяемый {@code TreeSet<Task>} с задачами, отсортированными по времени
+     * @return неизменяемый {@code List<Task>} с задачами, отсортированными по времени
      */
-    public TreeSet<Task> getTimeSortedTasks() {
-        return new TreeSet<>(timeSortedTasks);
+    public List<Task> getPrioritizedTasks() {
+        return List.copyOf(timeSortedTasks);
     }
 }
