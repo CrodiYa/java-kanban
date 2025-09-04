@@ -7,7 +7,6 @@ import model.Task;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.TreeSet;
 
 /**
@@ -122,7 +121,6 @@ public class TaskTimeController {
      * @param epic     эпик, параметры которого следует обновить
      * @param subtask  удаляемая подзадача, длительность которой следует вычесть
      * @param subtasks список всех оставшихся подзадач эпика после удаления
-     *
      * @implSpec Метод вызывается <b>после</b> удаления подзадачи
      * @apiNote Игнорирует подзадачи без установленных временных параметров ({@code duration} или {@code startTime})
      * @implNote Время начала ищется по {@code startTime}, время окончания - по {@code endTime}
@@ -139,19 +137,27 @@ public class TaskTimeController {
             return;
         }
 
-        subtasks.stream()
+        List<SubTask> validSubtasks = subtasks.stream()
                 .filter(subTask -> !hasMissingTimeFields(subTask))
-                .max(Comparator.comparing(Task::getEndTime))
-                .ifPresent(
-                        subTask -> epic.setEndTime(subTask.getEndTime())
-                );
+                .toList();
 
-        subtasks.stream()
-                .filter(subTask -> !hasMissingTimeFields(subTask))
-                .min(Comparator.comparing(Task::getStartTime))
-                .ifPresent(
-                        subTask -> epic.setStartTime(subTask.getStartTime())
-                );
+        if (!validSubtasks.isEmpty()) {
+            validSubtasks.stream()
+                    .max(Comparator.comparing(Task::getEndTime))
+                    .ifPresent(
+                            subTask -> epic.setEndTime(subTask.getEndTime()));
+
+            validSubtasks.stream()
+                    .min(Comparator.comparing(Task::getStartTime))
+                    .ifPresent(
+                            subTask -> epic.setStartTime(subTask.getStartTime()));
+
+        } else {
+            epic.setStartTime(null);
+            epic.setDuration(null);
+            epic.setEndTime(null);
+        }
+
 
     }
 
