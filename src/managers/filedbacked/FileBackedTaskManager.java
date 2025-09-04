@@ -230,7 +230,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        super.updateTask(epic);
+        super.updateEpic(epic);
         save();
     }
 
