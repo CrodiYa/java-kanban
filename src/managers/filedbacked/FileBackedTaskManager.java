@@ -4,9 +4,6 @@ import managers.InMemoryTaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-
-import static util.CsvField.*;
-
 import util.Status;
 import util.Type;
 import util.exceptions.ManagerLoadException;
@@ -20,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static managers.filedbacked.ParserHelper.*;
+import static util.CsvField.*;
 import static util.Type.*;
 
 /**
@@ -92,7 +90,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             String header = reader.readLine();
             validateHeader(header);
-
             int maxId = 0; // будет присвоен счетчику менеджера
 
             while (reader.ready()) {
@@ -111,7 +108,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Duration duration = parseOptionalDuration(parts[DURATION.get()]);
                     LocalDateTime startTime = parseOptionalDateTime(parts[START_TIME.get()], formatter);
 
-
                     maxId = Math.max(maxId, id);
                     manager.setIdCount(id - 1); // менеджер сам присвоит id, устанавливаем счетчик на предыдущий
 
@@ -121,8 +117,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         manager.addEpic(new Epic(title, description, status));
                     } else if (type == SUBTASK) {
                         manager.addSubTask(new SubTask(title, description, status, epicId, duration, startTime));
-                    } else {
-                        System.out.println("Такой формат не существует");
                     }
                 } catch (ManagerLoadException e) {
                     e.printStackTrace();
