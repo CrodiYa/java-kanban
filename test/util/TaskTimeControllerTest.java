@@ -1,6 +1,5 @@
 package util;
 
-import managers.InMemoryTaskManager;
 import managers.Managers;
 import managers.TaskManager;
 import model.Epic;
@@ -80,9 +79,12 @@ public class TaskTimeControllerTest {
 
     @Test
     public void shouldBeNoOverlap() {
-        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
-        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(tenMinutes));
-        Task task3 = new Task("task3", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(-tenMinutes));
+        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes,
+                epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
+        Task task3 = new Task("task3", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(-tenMinutes));
 
         assertFalse(ttController.isTimeOverlapping(task1));
         assertFalse(ttController.isTimeOverlapping(task2));
@@ -113,11 +115,16 @@ public class TaskTimeControllerTest {
     @Test
     public void shouldAddInPriorityOrder() {
         Task[] tasks = {
-                new Task("task5", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(10000)),
-                new Task("task4", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(1000)),
-                new Task("task3", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(100)),
-                new Task("task2", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(10)),
-                new Task("task1", "demo", Status.NEW, tenMinutes, epochTime),
+                new Task("task5", "demo", Status.NEW, tenMinutes,
+                        epochTime.plusMinutes(10000)),
+                new Task("task4", "demo", Status.NEW, tenMinutes,
+                        epochTime.plusMinutes(1000)),
+                new Task("task3", "demo", Status.NEW, tenMinutes,
+                        epochTime.plusMinutes(100)),
+                new Task("task2", "demo", Status.NEW, tenMinutes,
+                        epochTime.plusMinutes(10)),
+                new Task("task1", "demo", Status.NEW, tenMinutes,
+                        epochTime),
         };
 
         for (Task task : tasks) {
@@ -140,9 +147,12 @@ public class TaskTimeControllerTest {
         manager.addEpic(epic);
 
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime);
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes * 2));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime);
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 2));
 
         Duration expectedDuration = Duration.ofMinutes(tenMinutes * 3);
         LocalDateTime expectedEndTime = epochTime.plus(expectedDuration);
@@ -164,9 +174,12 @@ public class TaskTimeControllerTest {
         manager.addEpic(epic);
 
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime);
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes * 5));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes * 10));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime);
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 5));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 10));
 
         Duration expectedDuration = Duration.ofMinutes(tenMinutes * 2);
         LocalDateTime expectedEndTime = epochTime.plusMinutes(tenMinutes * 5).plusMinutes(tenMinutes);
@@ -190,9 +203,12 @@ public class TaskTimeControllerTest {
         manager.addEpic(epic);
 
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime);
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes * 2));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime);
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 2));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
 
         Duration expectedDuration = Duration.ofMinutes(tenMinutes * 2);
         LocalDateTime expectedStartTime = epochTime.plusMinutes(tenMinutes);
@@ -216,9 +232,12 @@ public class TaskTimeControllerTest {
         manager.addEpic(epic);
 
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime);
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(tenMinutes * 2));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime);
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 2));
 
         manager.addSubTask(subTask1);
         manager.addSubTask(subTask2);
@@ -231,6 +250,46 @@ public class TaskTimeControllerTest {
         assertNull(epic.getStartTime());
         assertNull(epic.getDuration());
         assertNull(epic.getEndTime());
+    }
+
+    @Test
+    public void shouldFindSubTaskFromRightEpic() {
+        TaskManager manager = Managers.getDefault();
+
+        int epicId1 = 1;
+        Epic epic = new Epic("epic1", "demo", Status.NEW);
+        manager.addEpic(epic);
+
+        int epicId2 = 2;
+        Epic epic2 = new Epic("epic2", "demo", Status.NEW);
+        manager.addEpic(epic2);
+
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId1, tenMinutes,
+                epochTime);
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId1, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId1, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 2));
+
+        manager.addSubTask(subTask1);
+        manager.addSubTask(subTask2);
+        manager.addSubTask(subTask3);
+
+        SubTask subTask4 = new SubTask("subtask4", "demo", Status.NEW, epicId2, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 3));
+        SubTask subTask5 = new SubTask("subtask5", "demo", Status.NEW, epicId2, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 4));
+        SubTask subTask6 = new SubTask("subtask6", "demo", Status.NEW, epicId2, tenMinutes,
+                epochTime.plusMinutes(tenMinutes * 5));
+
+        manager.addSubTask(subTask4);
+        manager.addSubTask(subTask5);
+        manager.addSubTask(subTask6);
+
+        manager.deleteSubTask(6); //subtask4
+
+        assertEquals(subTask5.getStartTime(), epic2.getStartTime());
     }
 
 
@@ -276,16 +335,21 @@ public class TaskTimeControllerTest {
 
     @Test
     public void shouldRemoveOnlyTasks() {
-        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
-        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(tenMinutes));
+        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes,
+                epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
 
         int epicId = 3;
         Epic epic = new Epic("epic", "demo", Status.NEW);
         epic.setTaskId(epicId);
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(100));
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(1000));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(10000));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(100));
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(1000));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(10000));
 
         ttController.add(task1);
         ttController.add(task2);
@@ -308,16 +372,21 @@ public class TaskTimeControllerTest {
 
     @Test
     public void shouldRemoveOnlySubTasks() {
-        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
-        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes, epochTime.plusMinutes(tenMinutes));
+        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes,
+                epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
 
         int epicId = 3;
         Epic epic = new Epic("epic", "demo", Status.NEW);
         epic.setTaskId(epicId);
 
-        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(100));
-        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(1000));
-        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes, epochTime.plusMinutes(10000));
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(100));
+        SubTask subTask2 = new SubTask("subtask2", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(1000));
+        SubTask subTask3 = new SubTask("subtask3", "demo", Status.NEW, epicId, tenMinutes,
+                epochTime.plusMinutes(10000));
 
         ttController.add(task1);
         ttController.add(task2);
