@@ -1,12 +1,12 @@
 package model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import util.Status;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
 
