@@ -1,6 +1,6 @@
 package util.exceptions;
 
-public class TaskTimeOverlapException extends RuntimeException{
+public class TaskTimeOverlapException extends RuntimeException {
 
     public TaskTimeOverlapException() {
         super();

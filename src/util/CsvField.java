@@ -16,7 +16,7 @@ public enum CsvField {
         this.index = index;
     }
 
-    public int get(){
+    public int get() {
         return index;
     }
 }
