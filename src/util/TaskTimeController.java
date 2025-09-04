@@ -105,32 +105,32 @@ public class TaskTimeController {
     }
 
     /**
-     * Обновляет временные параметры эпика при удалении подзадачи.
-     * Игнорирует подзадачи без полей времени.
+     * Обновляет временные параметры эпика после удаления подзадачи.
+     *
      * <p>Выполняет следующие операции:
      * <ul>
      *   <li><b>Длительность:</b> Уменьшает общую длительность эпика на длительность удаляемой подзадачи
-     *       с помощью {@link Epic#setEpicDuration(java.time.Duration)}.</li>
-     *   <li><b>Время начала:</b> Находит самое раннее время начала среди оставшихся подзадач
-     *       и устанавливает его как время начала эпика.</li>
-     *   <li><b>Время окончания:</b> Находит самое позднее время окончания среди оставшихся подзадач
+     *       с помощью {@link Epic#setEpicDuration(long)}.</li>
+     *   <li><b>Время начала:</b> Находит самое раннее время начала среди валидных оставшихся подзадач
+     *       (игнорируя задачи без временных параметров) и устанавливает его как время начала эпика.</li>
+     *   <li><b>Время окончания:</b> Находит самое позднее время окончания среди валидных оставшихся подзадач
      *       и устанавливает его как время окончания эпика.</li>
-     *   <li><b>Очистка параметров:</b> Если подзадач не осталось, сбрасывает все временные параметры в {@code null}.</li>
+     *   <li><b>Очистка параметров:</b> Если не осталось валидных подзадач с временными параметрами,
+     *       сбрасывает все временные параметры эпика в {@code null}.</li>
      * </ul>
      *
-     * @param epic    эпик, параметры которого следует обновить
-     * @param subtask подзадача, длительность которой следует вычесть
-     * @implSpec Метод вызывается <b>после</b> удаления подзадачи из эпика
-     * @apiNote Метод пересчитывает параметры на основе всех оставшихся подзадач
+     * @param epic     эпик, параметры которого следует обновить
+     * @param subtask  удаляемая подзадача, длительность которой следует вычесть
+     * @param subtasks список всех оставшихся подзадач эпика после удаления
+     *
+     * @implSpec Метод вызывается <b>после</b> удаления подзадачи
+     * @apiNote Игнорирует подзадачи без установленных временных параметров ({@code duration} или {@code startTime})
+     * @implNote Время начала ищется по {@code startTime}, время окончания - по {@code endTime}
      */
-    public void updateEpicTimeParamsDeletion(Epic epic, SubTask subtask) {
+    public void updateEpicTimeParamsDeletion(Epic epic, SubTask subtask, List<SubTask> subtasks) {
         if (hasMissingTimeFields(subtask)) return;
 
         epic.setEpicDuration(-subtask.getDuration().toMinutes()); // в любом случае удаляем
-
-        List<SubTask> subtasks = timeSortedTasks.stream() // получаем список подзадач
-                .filter(task -> task.getType() == Type.SUBTASK)
-                .map(task -> (SubTask) task).toList();
 
         if (subtasks.isEmpty()) {
             epic.setStartTime(null);
@@ -139,11 +139,20 @@ public class TaskTimeController {
             return;
         }
 
-        Optional<SubTask> newEndTime = subtasks.stream().max(Comparator.comparing(Task::getEndTime));
-        epic.setEndTime(newEndTime.get().getEndTime());
+        subtasks.stream()
+                .filter(subTask -> !hasMissingTimeFields(subTask))
+                .max(Comparator.comparing(Task::getEndTime))
+                .ifPresent(
+                        subTask -> epic.setEndTime(subTask.getEndTime())
+                );
 
-        Optional<SubTask> newStartTime = subtasks.stream().min(Comparator.comparing(Task::getStartTime));
-        epic.setStartTime(newStartTime.get().getStartTime());
+        subtasks.stream()
+                .filter(subTask -> !hasMissingTimeFields(subTask))
+                .min(Comparator.comparing(Task::getStartTime))
+                .ifPresent(
+                        subTask -> epic.setStartTime(subTask.getStartTime())
+                );
+
     }
 
     private boolean hasMissingTimeFields(Task task) {

@@ -288,7 +288,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         historyManager.remove(id);
         taskTimeController.remove(subTask);
-        taskTimeController.updateEpicTimeParamsDeletion(epic, subTask);
+        taskTimeController.updateEpicTimeParamsDeletion(epic, subTask, getSubTasksFromEpic(epicParentId));
         subtasks.remove(id);
     }
 
