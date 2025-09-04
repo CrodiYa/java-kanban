@@ -106,7 +106,7 @@ public class TaskTimeController {
 
     /**
      * Обновляет временные параметры эпика при удалении подзадачи.
-     *
+     * Игнорирует подзадачи без полей времени.
      * <p>Выполняет следующие операции:
      * <ul>
      *   <li><b>Длительность:</b> Уменьшает общую длительность эпика на длительность удаляемой подзадачи
@@ -166,6 +166,9 @@ public class TaskTimeController {
     }
 
     public void remove(Task task) {
+        if (hasMissingTimeFields(task)) {
+            return;
+        }
         timeSortedTasks.remove(task);
     }
 
@@ -173,7 +176,7 @@ public class TaskTimeController {
      * Удаляет задачу или подзадачу из отсортированной коллекции по идентификатору.
      *
      * <p>Метод выполняет поиск элемента с указанным идентификатором и удаляет его
-     * из внутренней отсортированной коллекции временных интервалов.
+     * из внутренней отсортированной коллекции временных интервалов, если у него есть поля времени.
      *
      * <p><b>Не рекомендуется для общего использования</b> - метод следует использовать только
      * если нет доступа к объекту задачи и известен только {@code id}.
@@ -181,7 +184,7 @@ public class TaskTimeController {
      * @param id идентификатор задачи для удаления
      */
     public void remove(int id) {
-        timeSortedTasks.removeIf(element -> element.getTaskId() == id);
+        timeSortedTasks.removeIf(element -> element.getTaskId() == id && !hasMissingTimeFields(element));
     }
 
     /**
