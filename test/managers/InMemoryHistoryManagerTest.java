@@ -2,10 +2,10 @@ package managers;
 
 import managers.history.HistoryManager;
 import model.Epic;
-import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Test;
+import util.Status;
 
 import static org.junit.jupiter.api.Assertions.*;
 

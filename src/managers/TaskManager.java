@@ -4,9 +4,13 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Интерфейс менеджера задач для управления задачами, эпиками и подзадачами.
+ *
+ * @apiNote Реализации могут добавлять дополнительные проверки (например, временные пересечения)
+ */
 public interface TaskManager {
     void addTask(Task task);
 
@@ -20,13 +24,15 @@ public interface TaskManager {
 
     SubTask getSubTask(int id);
 
-    ArrayList<Task> getTasks();
+    List<Task> getTasks();
 
-    ArrayList<Epic> getEpics();
+    List<Epic> getEpics();
 
-    ArrayList<SubTask> getSubTasks();
+    List<SubTask> getSubTasks();
 
-    ArrayList<SubTask> getSubTasksFromEpic(int id);
+    List<SubTask> getSubTasksFromEpic(int id);
+
+    List<Task> getPrioritizedTasks();
 
     void updateTask(Task task);
 

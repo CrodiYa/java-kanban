@@ -1,1 +1,7 @@
-id,type,name,status,description,epic
+id,type,name,status,description,epic,duration,startTime
+1,TASK,task1,NEW,demo,null,PT9M,2025-09-03 20:34:23.587
+2,TASK,task2,NEW,demo,null,PT10M,null
+3,EPIC,epic,NEW,demo,null,PT30M,2025-09-03 20:44:23.590
+4,SUBTASK,subtask1,NEW,demo,3,PT10M,2025-09-03 20:44:23.590
+5,SUBTASK,subtask2,NEW,demo,3,PT10M,2025-09-03 20:54:23.590
+6,SUBTASK,subtask3,NEW,demo,3,PT10M,2025-09-03 21:04:23.590
