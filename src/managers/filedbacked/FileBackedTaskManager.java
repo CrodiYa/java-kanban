@@ -4,6 +4,9 @@ import managers.InMemoryTaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+
+import static util.CsvField.*;
+
 import util.Status;
 import util.Type;
 import util.exceptions.ManagerLoadException;
@@ -98,27 +101,31 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 String[] parts = line.split(",");
+                try {
+                    int id = parseInteger(parts[ID.get()]);
+                    Type type = parseType(parts[TYPE.get()]);
+                    String title = parts[TITLE.get()];
+                    Status status = parseStatus(parts[STATUS.get()]);
+                    String description = parts[DESCRIPTION.get()];
+                    int epicId = parseOptionalInteger(parts[EPIC_ID.get()]);
+                    Duration duration = parseOptionalDuration(parts[DURATION.get()]);
+                    LocalDateTime startTime = parseOptionalDateTime(parts[START_TIME.get()], formatter);
 
-                int id = parseInteger(parts[0]);
-                Type type = parseType(parts[1]);
-                String title = parts[2];
-                Status status = parseStatus(parts[3]);
-                String description = parts[4];
-                int epicId = parseOptionalInteger(parts[5]);
-                Duration duration = parseOptionalDuration(parts[6]);
-                LocalDateTime startTime = parseOptionalDateTime(parts[7], formatter);
 
-                maxId = Math.max(maxId, id);
-                manager.setIdCount(id - 1); // менеджер сам присвоит id, устанавливаем счетчик на предыдущий
+                    maxId = Math.max(maxId, id);
+                    manager.setIdCount(id - 1); // менеджер сам присвоит id, устанавливаем счетчик на предыдущий
 
-                if (type == TASK) {
-                    manager.addTask(new Task(title, description, status, duration, startTime));
-                } else if (type == EPIC) {
-                    manager.addEpic(new Epic(title, description, status));
-                } else if (type == SUBTASK) {
-                    manager.addSubTask(new SubTask(title, description, status, epicId, duration, startTime));
-                } else {
-                    System.out.println("Такой формат не существует");
+                    if (type == TASK) {
+                        manager.addTask(new Task(title, description, status, duration, startTime));
+                    } else if (type == EPIC) {
+                        manager.addEpic(new Epic(title, description, status));
+                    } else if (type == SUBTASK) {
+                        manager.addSubTask(new SubTask(title, description, status, epicId, duration, startTime));
+                    } else {
+                        System.out.println("Такой формат не существует");
+                    }
+                } catch (ManagerLoadException e) {
+                    e.printStackTrace();
                 }
             }
 
