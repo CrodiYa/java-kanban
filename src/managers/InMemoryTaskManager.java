@@ -92,17 +92,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        return new ArrayList<>(tasks.values());
+        return List.copyOf(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() {
-        return new ArrayList<>(epics.values());
+        return List.copyOf(epics.values());
     }
 
     @Override
     public List<SubTask> getSubTasks() {
-        return new ArrayList<>(subtasks.values());
+        return List.copyOf(subtasks.values());
     }
 
     @Override
