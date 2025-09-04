@@ -31,6 +31,7 @@ public class Epic extends Task {
         this.setStatus(Status.NEW);
         this.duration = null;
         this.startTime = null;
+        this.endTime = null;
     }
 
     public List<Integer> getSubtaskIds() {
