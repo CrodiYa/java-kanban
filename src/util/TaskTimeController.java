@@ -65,11 +65,7 @@ public class TaskTimeController {
 
         Task ceiling = timeSortedTasks.ceiling(task);
 
-        if (ceiling != null && ceiling.getStartTime().isBefore(task.getEndTime())) {
-            return true;
-        }
-
-        return false;
+        return ceiling != null && ceiling.getStartTime().isBefore(task.getEndTime());
     }
 
     /**
@@ -120,7 +116,7 @@ public class TaskTimeController {
      *
      * @param epic     эпик, параметры которого следует обновить
      * @param subtask  удаляемая подзадача, длительность которой следует вычесть
-     * @param subtasks список всех оставшихся подзадач эпика после удаления
+     * @param subtasks список всех оставшихся подзадач эпика после удаления подзадачи
      * @implSpec Метод вызывается <b>после</b> удаления подзадачи
      * @apiNote Игнорирует подзадачи без установленных временных параметров ({@code duration} или {@code startTime})
      * @implNote Время начала ищется по {@code startTime}, время окончания - по {@code endTime}

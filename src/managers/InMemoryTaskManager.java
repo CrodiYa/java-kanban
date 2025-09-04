@@ -197,7 +197,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         historyManager.remove(id);
-        taskTimeController.remove(tasks.get(id)); // удаляем объект т.к это быстрее, чем удаление по id
+        taskTimeController.remove(tasks.get(id)); // Быстрее чем удаление по id
         tasks.remove(id);
     }
 

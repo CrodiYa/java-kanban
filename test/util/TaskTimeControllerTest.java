@@ -48,7 +48,7 @@ public class TaskTimeControllerTest {
         ttController.add(task1);
 
         long fiveMinutes = 5;
-        Task task2 = new Task("task2", "demo", Status.NEW, fiveMinutes, epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, fiveMinutes, epochTime.plusMinutes(-1));
 
         assertTrue(ttController.isTimeOverlapping(task2));
     }
@@ -90,7 +90,6 @@ public class TaskTimeControllerTest {
         assertFalse(ttController.isTimeOverlapping(task2));
         assertFalse(ttController.isTimeOverlapping(task3));
     }
-
 
     @Test
     public void shouldNotAddEpic() {
@@ -423,7 +422,7 @@ public class TaskTimeControllerTest {
         Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
         ttController.add(task1);
 
-        LocalDateTime wrongStart = epochTime.plusMinutes(8); // за 2 минут до конца таска1
+        LocalDateTime wrongStart = epochTime.plusMinutes(8); // за 2 минуты до конца таска1
         Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes, wrongStart);
 
         assertTrue(ttController.isTimeOverlappingWithTreeSearch(task2));
@@ -435,7 +434,7 @@ public class TaskTimeControllerTest {
         ttController.add(task1);
 
         long fiveMinutes = 5;
-        Task task2 = new Task("task2", "demo", Status.NEW, fiveMinutes, epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, fiveMinutes, epochTime.plusMinutes(-1));
 
         assertTrue(ttController.isTimeOverlappingWithTreeSearch(task2));
     }
@@ -445,7 +444,7 @@ public class TaskTimeControllerTest {
         Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
         ttController.add(task1);
 
-        LocalDateTime wrongStart = epochTime.plusMinutes(1); // за 2 минут до конца таска1
+        LocalDateTime wrongStart = epochTime.plusMinutes(1); // за 2 минуты до конца таска1
         long fiveMinutes = 5;
         Task task2 = new Task("task2", "demo", Status.NEW, fiveMinutes, wrongStart);
 
@@ -462,6 +461,20 @@ public class TaskTimeControllerTest {
 
         assertFalse(ttController.isTimeOverlappingWithTreeSearch(task1));
         assertFalse(ttController.isTimeOverlappingWithTreeSearch(task2));
+    }
+
+    @Test
+    public void shouldBeNoOverlapTreeSearch() {
+        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes,
+                epochTime);
+        Task task2 = new Task("task2", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(tenMinutes));
+        Task task3 = new Task("task3", "demo", Status.NEW, tenMinutes,
+                epochTime.plusMinutes(-tenMinutes));
+
+        assertFalse(ttController.isTimeOverlappingWithTreeSearch(task1));
+        assertFalse(ttController.isTimeOverlappingWithTreeSearch(task2));
+        assertFalse(ttController.isTimeOverlappingWithTreeSearch(task3));
     }
 
 }
