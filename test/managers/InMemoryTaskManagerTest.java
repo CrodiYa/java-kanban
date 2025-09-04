@@ -1,9 +1,14 @@
 package managers;
 
-import model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.Status;
+import util.exceptions.TaskTimeOverlapException;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -263,6 +268,99 @@ public class InMemoryTaskManagerTest {
         manager.clearSubTasks();
 
         assertEquals(Status.NEW, epic.getStatus());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfOverLap() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        Task task1 = new Task("task1", "demo", Status.NEW, 10, epochTime);
+        manager.addTask(task1);
+
+        Task task2 = new Task("task2", "demo", Status.NEW, 5, epochTime);
+
+        assertThrows(TaskTimeOverlapException.class, () -> {
+            manager.addTask(task2);
+        });
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, 5, epochTime);
+
+        assertThrows(TaskTimeOverlapException.class, () -> {
+            manager.addSubTask(subTask1);
+        });
+    }
+
+    @Test
+    public void shouldDeleteTasksFromControllerWhenDeleteFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        Task task1 = new Task("task1", "demo", Status.NEW, 5, epochTime);
+        manager.addTask(task1);
+        manager.deleteTask(task1.getTaskId());
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void shouldDeleteSubTasksFromControllerWhenDeleteFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, 5, epochTime);
+        manager.addSubTask(subTask1);
+        manager.deleteSubTask(subTask1.getTaskId());
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void shouldDeleteTasksFromControllerClearTasksFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        Task task1 = new Task("task1", "demo", Status.NEW, 5, epochTime);
+        manager.addTask(task1);
+        manager.clearTasks();
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void shouldDeleteSubTasksFromControllerWhenClearSubTasksFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, 5, epochTime);
+        manager.addSubTask(subTask1);
+        manager.clearSubTasks();
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void shouldDeleteSubTasksFromControllerWhenDeleteEpicFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, 5, epochTime);
+        manager.addSubTask(subTask1);
+        manager.deleteEpic(epicId);
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
+    }
+
+    @Test
+    public void shouldDeleteSubTasksFromControllerWhenClearEpicsFromManager() {
+        LocalDateTime epochTime =
+                LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+
+        SubTask subTask1 = new SubTask("subtask1", "demo", Status.NEW, epicId, 5, epochTime);
+        manager.addSubTask(subTask1);
+        manager.clearEpics();
+
+        assertEquals(0, manager.getPrioritizedTasks().size());
     }
 
 

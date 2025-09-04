@@ -1,15 +1,18 @@
 package managers;
 
 import managers.filedbacked.FileBackedTaskManager;
-import util.exceptions.ManagerSaveException;
 import model.Epic;
-import util.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import util.Status;
+import util.exceptions.ManagerLoadException;
+import util.exceptions.ManagerSaveException;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -94,5 +97,73 @@ public class FileBackedTaskManagerTest {
             assertEquals(words[i], task.getTitle());
             assertEquals(words[i + 1], task.getDescription());
         }
+    }
+
+    private void writeToTempFile(String line) {
+        String header = "id,type,name,status,description,epic,duration,startTime";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            writer.write(header);
+            writer.newLine();
+            writer.write(line);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidHeader() throws IOException {
+        File tempfile1 = File.createTempFile("task1", "csv");
+        assertThrows(ManagerLoadException.class, () -> {
+            FileBackedTaskManager.loadFromFile(tempfile1);
+        });
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidId() {
+        writeToTempFile("INVALID,TASK,task1,NEW,demo,null,PT9M,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenEmptyId() {
+        writeToTempFile("  ,TASK,task1,NEW,demo,null,PT9M,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidType() {
+        writeToTempFile("1,INVALID,task1,NEW,demo,null,PT9M,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidStatus() {
+        writeToTempFile("1,TASK,task1,INVALID,demo,null,PT9M,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidEpicId() {
+        writeToTempFile("1,TASK,task1,NEW,demo,INVALID,PT9M,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidDuration() {
+        writeToTempFile("1,TASK,task1,NEW,demo,null,INVALID,1970-01-01 00:00:00.000");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
+    }
+
+    @Test
+    public void shouldSkipWhenInvalidDateTime() {
+        writeToTempFile("1,TASK,task1,NEW,demo,null,PT9M,INVALID");
+        FileBackedTaskManager manager1 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(0, manager1.getTasks().size());
     }
 }
