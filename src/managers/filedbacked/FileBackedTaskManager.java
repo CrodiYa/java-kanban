@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static managers.filedbacked.ParserHelper.*;
 import static util.CsvField.*;
@@ -105,18 +106,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Status status = parseStatus(parts[STATUS.get()]);
                     String description = parts[DESCRIPTION.get()];
                     int epicId = parseOptionalInteger(parts[EPIC_ID.get()]);
-                    Duration duration = parseOptionalDuration(parts[DURATION.get()]);
+                    long maybeDuration = parseOptionalDuration(parts[DURATION.get()])
+                            .map(Duration::toMinutes)
+                            .orElse(-1L);
                     LocalDateTime startTime = parseOptionalDateTime(parts[START_TIME.get()], formatter);
 
                     maxId = Math.max(maxId, id);
                     manager.setIdCount(id - 1); // менеджер сам присвоит id, устанавливаем счетчик на предыдущий
 
                     if (type == TASK) {
-                        manager.addTask(new Task(title, description, status, duration, startTime));
+                        manager.addTask(new Task(title, description, status, maybeDuration, startTime));
                     } else if (type == EPIC) {
                         manager.addEpic(new Epic(title, description, status));
                     } else if (type == SUBTASK) {
-                        manager.addSubTask(new SubTask(title, description, status, epicId, duration, startTime));
+                        manager.addSubTask(new SubTask(title, description, status, epicId, maybeDuration, startTime));
                     }
                 } catch (ManagerLoadException e) {
                     e.printStackTrace();

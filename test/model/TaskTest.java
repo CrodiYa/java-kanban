@@ -38,15 +38,6 @@ public class TaskTest {
     }
 
     @Test
-    public void shouldBeEqualWhenDifferentConstructorsDuration() {
-        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes);
-        Task task2 = new Task("task2", "demo", Status.NEW, durationTenMinutes);
-
-        assertEquals(task1.getDuration(), task2.getDuration());
-        assertEquals(task1.getDuration(), durationTenMinutes);
-    }
-
-    @Test
     public void shouldBeEqualWhenDurationSet() {
         Task task1 = new Task("task1", "demo", Status.NEW);
         Task task2 = new Task("task2", "demo", Status.NEW);
@@ -55,18 +46,6 @@ public class TaskTest {
         task2.setDuration(tenMinutes);
 
         assertEquals(task1.getDuration(), task2.getDuration());
-    }
-
-    @Test
-    public void shouldBeEqualWhenConstructorsAndSetLocalDateTime() {
-
-        Task task1 = new Task("task1", "demo", Status.NEW, tenMinutes, epochTime);
-        Task task2 = new Task("task2", "demo", Status.NEW, durationTenMinutes);
-
-        task2.setStartTime(epochTime);
-
-        assertEquals(task1.getStartTime(), task2.getStartTime());
-        assertEquals(task1.getStartTime(), epochTime);
     }
 
     @Test

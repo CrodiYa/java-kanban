@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 /**
  * Вспомогательный класс для парсинга данных задач из файла.
@@ -76,13 +77,13 @@ public class ParserHelper {
         }
     }
 
-    protected static Duration parseOptionalDuration(String value) throws ManagerLoadException {
+    protected static Optional<Duration> parseOptionalDuration(String value) throws ManagerLoadException {
         if (value == null || value.equals("null") || value.trim().isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         try {
-            return Duration.parse(value.trim());
+            return Optional.of(Duration.parse(value.trim()));
         } catch (Exception e) {
             throw new ManagerLoadException("Invalid duration format: " + value);
         }
