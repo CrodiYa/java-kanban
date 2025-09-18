@@ -1,7 +1,7 @@
 package managers.filedbacked;
 
-import util.Status;
-import util.Type;
+import util.enums.Status;
+import util.enums.Type;
 import util.exceptions.ManagerLoadException;
 
 import java.time.Duration;

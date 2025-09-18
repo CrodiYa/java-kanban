@@ -6,6 +6,8 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Test;
+import util.enums.Status;
+import util.enums.Type;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

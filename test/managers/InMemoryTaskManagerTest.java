@@ -5,7 +5,7 @@ import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import util.Status;
+import util.enums.Status;
 import util.exceptions.TaskTimeOverlapException;
 
 import java.time.LocalDateTime;

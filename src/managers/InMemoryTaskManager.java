@@ -4,7 +4,7 @@ import managers.history.HistoryManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import util.Status;
+import util.enums.Status;
 import util.TaskTimeController;
 import util.exceptions.TaskTimeOverlapException;
 
