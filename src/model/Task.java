@@ -26,7 +26,7 @@ public class Task implements Comparable<Task> {
         this.title = title;
         this.description = description;
         this.status = status;
-        this.duration = durationInMinutes < 0 ? null : Duration.ofMinutes(durationInMinutes);
+        this.duration = durationInMinutes <= 0 ? null : Duration.ofMinutes(durationInMinutes);
         this.startTime = startTime;
     }
 
@@ -34,7 +34,7 @@ public class Task implements Comparable<Task> {
         this.title = title;
         this.description = description;
         this.status = status;
-        this.duration = Duration.ofMinutes(durationInMinutes);
+        this.duration = durationInMinutes <= 0 ? null : Duration.ofMinutes(durationInMinutes);
     }
 
     public int getTaskId() {
