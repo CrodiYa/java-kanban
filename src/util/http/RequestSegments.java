@@ -7,6 +7,36 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Класс для парсинга сегментов HTTP-запроса.
+ * <p>
+ * Разбирает URI пути запроса на составные части: endpoint, ресурс,
+ * идентификатор и опциональный подресурс. Также выполняет валидацию HTTP-метода.
+ * </p>
+ *
+ * <p><b>Формат пути:</b></p>
+ * <ul>
+ *   <li>{@code /resource} - ресурс без идентификатора</li>
+ *   <li>{@code /resource/123} - ресурс с числовым идентификатором</li>
+ *   <li>{@code /resource/123/subresource} - ресурс с идентификатором и подресурсом</li>
+ * </ul>
+ *
+ * <p><b>Поддерживаемые HTTP-методы:</b> GET, POST, DELETE, HEAD, OPTIONS</p>
+ *
+ * <p><b>Особенности обработки:</b></p>
+ * <ul>
+ *   <li>Метод HEAD обрабатывается как GET</li>
+ *   <li>Некорректные идентификаторы преобразуются в -1</li>
+ *   <li>Неподдерживаемые методы возвращают соответствующие
+ *       значения Endpoint.INVALID_METHOD</li>
+ *   <li>Ошбика парсинга Endpoint возвращает Enpoint.INVALID</li>
+ * </ul>
+ *
+ * @param endpoint конечная точка запроса (на основе HTTP-метода)
+ * @param resource название основного ресурса (первый сегмент пути после /)
+ * @param id числовой идентификатор ресурса (второй сегмент пути)
+ * @param subResource опциональный подресурс (третий сегмент пути)
+ */
 public record RequestSegments(
         Endpoint endpoint,
         String resource,
@@ -21,11 +51,39 @@ public record RequestSegments(
             "OPTIONS")
     );
 
+    /**
+     * Создает экземпляр RequestSegments на основе HttpExchange.
+     * <p>
+     * Извлекает метод запроса и путь из переданного HttpExchange и делегирует
+     * парсинг методу {@link #parse(String, String)}.
+     * </p>
+     *
+     * @param exchange HTTP-обмен для парсинга
+     * @return новый экземпляр RequestSegments с разобранными сегментами пути
+     * @see #parse(String, String)
+     */
     public static RequestSegments getRequestSegments(HttpExchange exchange) {
         String path = exchange.getRequestURI().getPath();
         return RequestSegments.parse(exchange.getRequestMethod(), path);
     }
 
+    /**
+     * Парсит HTTP-метод и путь на составляющие сегменты.
+     * <p>
+     * В зависимости от количества сегментов пути создает соответствующий экземпляр:
+     * </p>
+     * <table>
+     *   <tr><th>Сегментов</th><th>Формат</th><th>Результат</th></tr>
+     *   <tr><td>2</td><td>/resource</td><td>resource, id=0, subResource=empty</td></tr>
+     *   <tr><td>3</td><td>/resource/123</td><td>resource, id=123, subResource=empty</td></tr>
+     *   <tr><td>4</td><td>/resource/123/sub</td><td>resource, id=123, subResource=sub</td></tr>
+     *   <tr><td>другое</td><td>любой</td><td>Endpoint.INVALID_SUBRESOURCE</td></tr>
+     * </table>
+     *
+     * @param method HTTP-метод запроса
+     * @param path путь URI запроса
+     * @return экземпляр RequestSegments с разобранными сегментами
+     */
     private static RequestSegments parse(String method, String path) {
         String[] parts = path.split("/");
 
@@ -85,6 +143,4 @@ public record RequestSegments(
 
         return endpoint;
     }
-
-
 }
