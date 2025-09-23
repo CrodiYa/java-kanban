@@ -277,4 +277,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.clearSubTasks();
         save();
     }
+
+    @Override
+    public void clearSubTasksFromEpic(int id) {
+        super.clearSubTasks();
+        save();
+    }
 }
