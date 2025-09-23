@@ -4,8 +4,9 @@ import managers.history.HistoryManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import util.enums.Status;
 import util.TaskTimeController;
+import util.enums.Status;
+import util.exceptions.TaskNotFound;
 import util.exceptions.TaskTimeOverlapException;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(task)) {
-            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + task);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add task: " + task);
         }
         task.setTaskId(++idCount);
         tasks.put(task.getTaskId(), task);
@@ -59,7 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubTask(SubTask subTask) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(subTask)) {
-            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + subTask);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add subtask: " + subTask);
         }
         subTask.setTaskId(++idCount);
         subtasks.put(subTask.getTaskId(), subTask);
@@ -87,6 +88,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubTask(int id) {
         historyManager.addTask(subtasks.get(id));
+        return subtasks.get(id);
+    }
+
+    @Override
+    public Task getTaskWithoutHistory(int id) {
+        return tasks.get(id);
+    }
+
+    @Override
+    public Epic getEpicWithoutHistory(int id) {
+        return epics.get(id);
+    }
+
+    @Override
+    public SubTask getSubTaskWithoutHistory(int id) {
         return subtasks.get(id);
     }
 
@@ -124,12 +140,32 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        tasks.put(task.getTaskId(), task);
+        int id = task.getTaskId();
+        if (!tasks.containsKey(id)) {
+            throw new TaskNotFound("Task with id: " + id + " not found");
+        }
+        if (taskTimeController.isTimeOverlapping(task)) {
+            throw new TaskTimeOverlapException("Time overlap! Can`t add task: " + task);
+        }
+
+        Task oldTask = tasks.get(id);
+        taskTimeController.remove(oldTask);
+
+        oldTask.setTitle(task.getTitle());
+        oldTask.setDescription(task.getDescription());
+        oldTask.setStatus(task.getStatus());
+        oldTask.setDuration(task.getDuration());
+        oldTask.setStartTime(task.getStartTime());
+
+        taskTimeController.add(task);
     }
 
     @Override
     public void updateEpic(Epic epic) {
         int id = epic.getTaskId();
+        if (!epics.containsKey(id)) {
+            throw new TaskNotFound("Epic with id: " + id + " not found");
+        }
         Epic oldEpic = epics.get(id);
 
         oldEpic.setTitle(epic.getTitle());
@@ -139,13 +175,23 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubTask(SubTask subTask) {
         int id = subTask.getTaskId();
+        if (!subtasks.containsKey(id)) {
+            throw new TaskNotFound("SubTask with id: " + id + " not found");
+        }
+        if (taskTimeController.isTimeOverlapping(subTask)) {
+            throw new TaskTimeOverlapException("Time overlap! Can`t add subtask: " + subTask);
+        }
         SubTask oldSubTask = subtasks.get(id);
+        taskTimeController.remove(oldSubTask);
 
         oldSubTask.setTitle(subTask.getTitle());
         oldSubTask.setDescription(subTask.getDescription());
         oldSubTask.setStatus(subTask.getStatus());
+        oldSubTask.setDuration(subTask.getDuration());
+        oldSubTask.setStartTime(subTask.getStartTime());
 
-        updateEpicStatus(epics.get(oldSubTask.getEpicId())); //обновляем статус эпика
+        taskTimeController.add(oldSubTask);
+        updateEpicStatus(epics.get(oldSubTask.getEpicId()));
     }
 
     /**
@@ -302,6 +348,22 @@ public class InMemoryTaskManager implements TaskManager {
         taskTimeController.removeSubTasks();
 
         subtasks.clear();
+    }
+
+    @Override
+    public void clearSubTasksFromEpic(int id) {
+        if (!epics.containsKey(id)) {
+            throw new TaskNotFound("Epic with id: '" + id + "' not found");
+        }
+        Epic epic = epics.get(id);
+        List<Integer> subtasksFromEpic = epic.getSubtaskIds();
+
+        for (Integer key : subtasksFromEpic) {
+            taskTimeController.remove(subtasks.get(key));
+            historyManager.remove(key);
+            subtasks.remove(key);
+        }
+        epic.clearSubtasks();
     }
 
     public int getIdCount() {
