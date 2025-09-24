@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-    private static final List<DateTimeFormatter> formats =
+    private final List<DateTimeFormatter> formats =
             List.of(DateTimeFormatter.ISO_LOCAL_DATE_TIME,
                     DateTimeFormatter.ISO_DATE_TIME,
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"),
