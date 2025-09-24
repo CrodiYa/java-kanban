@@ -23,7 +23,7 @@ import java.time.format.DateTimeParseException;
  * </p>
  *
  * <p><b>Поддерживаемые эндпоинты для подзадач:</b></p>
- * <table border="1">
+ * <table>
  *   <tr><th>Метод</th><th>Путь</th><th>Действие</th></tr>
  *   <tr><td>HEAD</td><td>/subtasks или /subtasks/{id}</td><td>Получить заголовки</td></tr>
  *   <tr><td>GET</td><td>/subtasks</td><td>Получить все подзадачи</td></tr>
