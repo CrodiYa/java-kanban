@@ -11,7 +11,7 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public static String ErrorToJson(Gson gson, String error, String message) {
+    public static String errorToJson(Gson gson, String error, String message) {
         return gson.toJson(new ErrorResponse(error, message));
     }
 }

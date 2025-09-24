@@ -28,7 +28,7 @@ public class JsonBuilder {
     }
 
     public String badRequest(String message) {
-        return ErrorResponse.ErrorToJson(
+        return ErrorResponse.errorToJson(
                 gson,
                 "Bad Request",
                 message
@@ -36,7 +36,7 @@ public class JsonBuilder {
     }
 
     public String notFound(String message) {
-        return ErrorResponse.ErrorToJson(
+        return ErrorResponse.errorToJson(
                 gson,
                 "Not Found",
                 message
@@ -52,13 +52,13 @@ public class JsonBuilder {
     }
 
     public String hasOverlaps() {
-        return ErrorResponse.ErrorToJson(gson, "Task time is overlapping",
+        return ErrorResponse.errorToJson(gson, "Task time is overlapping",
                 "This task cannot be added due to overlap"
         );
     }
 
     public String invalidId() {
-        return ErrorResponse.ErrorToJson(
+        return ErrorResponse.errorToJson(
                 gson,
                 "Bad Request",
                 "Id must be a positive integer"
