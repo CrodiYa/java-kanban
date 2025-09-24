@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class HttpTaskServer {
-    private final int PORT = 8080;
+    private final int port = 8080;
     private HttpServer httpServer;
     private final TaskManager manager;
 
@@ -39,7 +39,7 @@ public class HttpTaskServer {
 
     private void createServer() {
         try {
-            httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+            httpServer = HttpServer.create(new InetSocketAddress(port), 0);
             httpServer.createContext("/tasks", new TaskHandler(manager, gson, jsonBuilder));
             httpServer.createContext("/epics", new EpicsHandler(manager, gson, jsonBuilder));
             httpServer.createContext("/subtasks", new SubTasksHandler(manager, gson, jsonBuilder));
