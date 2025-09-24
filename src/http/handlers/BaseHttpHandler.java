@@ -50,7 +50,7 @@ import static util.http.RequestSegments.getRequestSegments;
  * для конкретной логики обработки ресурсов.</p>
  */
 public abstract class BaseHttpHandler implements HttpHandler {
-    private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private final Charset defaultCharset = StandardCharsets.UTF_8;
     protected final TaskManager manager;
 
     protected Gson gson;
@@ -169,7 +169,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
 
 
     protected void sendText(HttpExchange exchange, String responseString, int responseCode) throws IOException {
-        byte[] resp = responseString.getBytes(DEFAULT_CHARSET);
+        byte[] resp = responseString.getBytes(defaultCharset);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.getResponseHeaders().add("Content-Length", String.valueOf(resp.length));
 
