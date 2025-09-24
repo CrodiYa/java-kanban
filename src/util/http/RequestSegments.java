@@ -43,14 +43,6 @@ public record RequestSegments(
         int id,
         Optional<String> subResource) {
 
-    private final static HashSet<String> validMethods = new HashSet<>(List.of(
-            "GET",
-            "POST",
-            "DELETE",
-            "HEAD",
-            "OPTIONS")
-    );
-
     /**
      * Создает экземпляр RequestSegments на основе HttpExchange.
      * <p>
@@ -125,6 +117,13 @@ public record RequestSegments(
     }
 
     private static Endpoint parseEndpoint(String method) {
+        HashSet<String> validMethods = new HashSet<>(List.of(
+                "GET",
+                "POST",
+                "DELETE",
+                "HEAD",
+                "OPTIONS")
+        );
         if (!validMethods.contains(method)) {
             return Endpoint.INVALID_METHOD;
         }
