@@ -32,9 +32,9 @@ import java.util.Optional;
  *   <li>Ошбика парсинга Endpoint возвращает Enpoint.INVALID</li>
  * </ul>
  *
- * @param endpoint конечная точка запроса (на основе HTTP-метода)
- * @param resource название основного ресурса (первый сегмент пути после /)
- * @param id числовой идентификатор ресурса (второй сегмент пути)
+ * @param endpoint    конечная точка запроса (на основе HTTP-метода)
+ * @param resource    название основного ресурса (первый сегмент пути после /)
+ * @param id          числовой идентификатор ресурса (второй сегмент пути)
  * @param subResource опциональный подресурс (третий сегмент пути)
  */
 public record RequestSegments(
@@ -81,7 +81,7 @@ public record RequestSegments(
      * </table>
      *
      * @param method HTTP-метод запроса
-     * @param path путь URI запроса
+     * @param path   путь URI запроса
      * @return экземпляр RequestSegments с разобранными сегментами
      */
     private static RequestSegments parse(String method, String path) {
