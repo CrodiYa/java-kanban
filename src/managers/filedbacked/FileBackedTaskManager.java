@@ -4,8 +4,8 @@ import managers.InMemoryTaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import util.Status;
-import util.Type;
+import util.enums.Status;
+import util.enums.Type;
 import util.exceptions.ManagerLoadException;
 import util.exceptions.ManagerSaveException;
 
@@ -17,8 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static managers.filedbacked.ParserHelper.*;
-import static util.CsvField.*;
-import static util.Type.*;
+import static util.enums.CsvField.*;
+import static util.enums.Type.*;
 
 /**
  * Менеджер задач с сохранением состояния в файл типа csv.
@@ -274,6 +274,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public void clearSubTasks() {
+        super.clearSubTasks();
+        save();
+    }
+
+    @Override
+    public void clearSubTasksFromEpic(int id) {
         super.clearSubTasks();
         save();
     }

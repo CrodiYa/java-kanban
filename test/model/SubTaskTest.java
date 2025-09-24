@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import util.Status;
+import util.enums.Status;
 
 public class SubTaskTest {
 

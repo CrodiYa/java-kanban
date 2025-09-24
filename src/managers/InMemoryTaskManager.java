@@ -4,8 +4,9 @@ import managers.history.HistoryManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import util.Status;
 import util.TaskTimeController;
+import util.enums.Status;
+import util.exceptions.TaskNotFound;
 import util.exceptions.TaskTimeOverlapException;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(task)) {
-            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + task);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add task: " + task);
         }
         task.setTaskId(++idCount);
         tasks.put(task.getTaskId(), task);
@@ -59,7 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubTask(SubTask subTask) throws TaskTimeOverlapException {
         if (taskTimeController.isTimeOverlapping(subTask)) {
-            throw new TaskTimeOverlapException("OVERLAP! Can`t add task: " + subTask);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add subtask: " + subTask);
         }
         subTask.setTaskId(++idCount);
         subtasks.put(subTask.getTaskId(), subTask);
@@ -87,6 +88,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubTask(int id) {
         historyManager.addTask(subtasks.get(id));
+        return subtasks.get(id);
+    }
+
+    @Override
+    public Task getTaskWithoutHistory(int id) {
+        return tasks.get(id);
+    }
+
+    @Override
+    public Epic getEpicWithoutHistory(int id) {
+        return epics.get(id);
+    }
+
+    @Override
+    public SubTask getSubTaskWithoutHistory(int id) {
         return subtasks.get(id);
     }
 
@@ -122,30 +138,139 @@ public class InMemoryTaskManager implements TaskManager {
         return taskTimeController.getPrioritizedTasks();
     }
 
+    /**
+     * Обновляет существующую задачу (Task) новыми данными.
+     *
+     * <p><b>Обновляемые поля:</b></p>
+     * <ul>
+     *   <li>Заголовок (title)</li>
+     *   <li>Описание (description)</li>
+     *   <li>Статус (status)</li>
+     *   <li>Продолжительность (duration)</li>
+     *   <li>Время начала (startTime)</li>
+     * </ul>
+     *
+     * <p><b>Временная логика:</b></p>
+     * <ul>
+     *   <li>Старая задача временно удаляется из временного контроллера</li>
+     *   <li>Проверяется пересечение временных интервалов для новой версии задачи</li>
+     *   <li>Обновленная задача добавляется обратно во временной контроллер</li>
+     *   <li>Если найдено пересечение времени старая задача добавляется обратно во временной контроллер</li>
+     * </ul>
+     *
+     * @param task задача с обновленными данными (должна содержать корректный taskId)
+     * @throws TaskNotFound             если задача с указанным Id не найдена
+     * @throws TaskTimeOverlapException если новое время задачи пересекается с существующими задачами
+     */
     @Override
     public void updateTask(Task task) {
-        tasks.put(task.getTaskId(), task);
+        int id = task.getTaskId();
+        if (!tasks.containsKey(id)) {
+            throw new TaskNotFound("Task with id: " + id + " not found");
+        }
+        Task oldTask = tasks.get(id);
+        taskTimeController.remove(oldTask);
+
+        if (taskTimeController.isTimeOverlapping(task)) {
+            taskTimeController.add(oldTask);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add task: " + task);
+        }
+
+        oldTask.setTitle(task.getTitle());
+        oldTask.setDescription(task.getDescription());
+        oldTask.setStatus(task.getStatus());
+        oldTask.setDuration(task.getDuration());
+        oldTask.setStartTime(task.getStartTime());
+
+        taskTimeController.add(oldTask);
     }
 
+    /**
+     * Обновляет существующий эпик (Epic) новыми данными.
+     * <p> Метод обновляет только основные данные эпика.
+     * <p> <b>В отличие от обычных задач, для эпиков:</b>
+     *
+     * <ul>
+     *   <li>Не проверяются временные интервалы</li>
+     *   <li>Не обновляется статус (статус эпика рассчитывается автоматически на основе подзадач)</li>
+     *   <li>Не обновляются временные характеристики (duration, startTime)</li>
+     * </ul>
+     *
+     * <p><b>Обновляемые поля:</b></p>
+     * <ul>
+     *   <li>Заголовок (title)</li>
+     *   <li>Описание (description)</li>
+     * </ul>
+     *
+     * @param epic эпик с обновленными данными (должен содержать корректный taskId)
+     * @throws TaskNotFound если эпик с указанным Id не найдена
+     */
     @Override
     public void updateEpic(Epic epic) {
         int id = epic.getTaskId();
+        if (!epics.containsKey(id)) {
+            throw new TaskNotFound("Epic with id: " + id + " not found");
+        }
         Epic oldEpic = epics.get(id);
 
         oldEpic.setTitle(epic.getTitle());
         oldEpic.setDescription(epic.getDescription());
     }
 
+    /**
+     * Обновляет существующую подзадачу (SubTask) новыми данными.
+     *
+     * <p><b>Обновляемые поля:</b></p>
+     * <ul>
+     *   <li>Заголовок (title)</li>
+     *   <li>Описание (description)</li>
+     *   <li>Статус (status)</li>
+     *   <li>Продолжительность (duration)</li>
+     *   <li>Время начала (startTime)</li>
+     * </ul>
+     *
+     * <p><b>Вторичные эффекты:</b></p>
+     * <ul>
+     *   <li>Автоматическое обновление статуса родительского эпика</li>
+     *   <li>Пересчет временных характеристик родительского эпика</li>
+     * </ul>
+     *
+     * <p><b>Временная логика:</b></p>
+     * <ul>
+     *   <li>Старая подзадача временно удаляется из временного контроллера</li>
+     *   <li>Проверяется пересечение временных интервалов для новой версии задачи</li>
+     *   <li>Обновленная подзадача добавляется обратно во временной контроллер</li>
+     *   <li>Если найдено пересечение времени старая подзадача добавляется обратно во временной контроллер</li>
+     * </ul>
+     *
+     * @param subTask подзадача с обновленными данными (должна содержать корректный taskId)
+     * @throws TaskNotFound             если подзадача с указанным Id не найдена
+     * @throws TaskTimeOverlapException если новое время подзадачи пересекается с существующими задачами
+     * @see #updateEpicStatus(Epic)
+     * @see TaskTimeController#isTimeOverlapping(Task)
+     */
     @Override
     public void updateSubTask(SubTask subTask) {
         int id = subTask.getTaskId();
+        if (!subtasks.containsKey(id)) {
+            throw new TaskNotFound("SubTask with id: " + id + " not found");
+        }
         SubTask oldSubTask = subtasks.get(id);
+        taskTimeController.remove(oldSubTask);
+
+        if (taskTimeController.isTimeOverlapping(subTask)) {
+            taskTimeController.add(oldSubTask);
+            throw new TaskTimeOverlapException("Time overlap! Can`t add subtask: " + subTask);
+        }
 
         oldSubTask.setTitle(subTask.getTitle());
         oldSubTask.setDescription(subTask.getDescription());
         oldSubTask.setStatus(subTask.getStatus());
+        oldSubTask.setDuration(subTask.getDuration());
+        oldSubTask.setStartTime(subTask.getStartTime());
 
-        updateEpicStatus(epics.get(oldSubTask.getEpicId())); //обновляем статус эпика
+        taskTimeController.add(oldSubTask);
+        updateEpicStatus(epics.get(oldSubTask.getEpicId()));
     }
 
     /**
@@ -302,6 +427,22 @@ public class InMemoryTaskManager implements TaskManager {
         taskTimeController.removeSubTasks();
 
         subtasks.clear();
+    }
+
+    @Override
+    public void clearSubTasksFromEpic(int id) {
+        if (!epics.containsKey(id)) {
+            throw new TaskNotFound("Epic with id: '" + id + "' not found");
+        }
+        Epic epic = epics.get(id);
+        List<Integer> subtasksFromEpic = epic.getSubtaskIds();
+
+        for (Integer key : subtasksFromEpic) {
+            taskTimeController.remove(subtasks.get(key));
+            historyManager.remove(key);
+            subtasks.remove(key);
+        }
+        epic.clearSubtasks();
     }
 
     public int getIdCount() {

@@ -1,8 +1,8 @@
 package model;
 
 import org.junit.jupiter.api.Test;
-import util.Status;
-import util.Type;
+import util.enums.Status;
+import util.enums.Type;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

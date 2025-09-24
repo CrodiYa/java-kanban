@@ -24,6 +24,12 @@ public interface TaskManager {
 
     SubTask getSubTask(int id);
 
+    Task getTaskWithoutHistory(int id);
+
+    Epic getEpicWithoutHistory(int id);
+
+    SubTask getSubTaskWithoutHistory(int id);
+
     List<Task> getTasks();
 
     List<Epic> getEpics();
@@ -51,6 +57,8 @@ public interface TaskManager {
     void deleteSubTask(int id);
 
     void clearSubTasks();
+
+    void clearSubTasksFromEpic(int id);
 
     List<Task> getHistory();
 }
